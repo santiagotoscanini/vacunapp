@@ -1,0 +1,36 @@
+# TODO(santito): mongoDB service and left apps
+
+version: "3.8"
+services:
+  pg-db:
+    container_name: pg-db
+    image: postgres
+    environment:
+      POSTGRES_USER: "$POSTGRES_USER"
+      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
+    ports:
+      - '5432:5432'
+    volumes:
+      - vacunapp-db:/var/lib/postgresql/data
+
+  login-service:
+    container_name: login-service
+    build:
+      context: services/login
+      dockerfile: Dockerfile
+    environment:
+      DB_DIALECT: "$DB_DIALECT"
+      DB_SCHEMA: "$DB_SCHEMA"
+      DB_USER: "$POSTGRES_USER"
+      DB_PASSWORD: "$POSTGRES_PASSWORD"
+      DB_HOST: "$DB_HOST"
+      PORT: "$LOGIN_PORT"
+      NODE_ENV: "$NODE_ENV"
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+    depends_on:
+      - postgres
+    ports:
+      - "$LOGIN_PORT:$LOGIN_PORT"
+
+volumes:
+  vacunapp-db:
