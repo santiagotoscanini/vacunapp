@@ -1,0 +1,18 @@
+POST localhost:3001/vaccination-centers HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVtQGlwc3VtLmNvbSIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2MjI3NzI0NzksImV4cCI6MTYyMjg1ODg3OX0.MjdAXcPeDYwVfLzOGC51Ms5Qp5t34rwG0cyPNVBy39M
+Content-Type: application/json
+
+{
+  "department": 2,
+  "departmentZone": 12,
+  "id": "hospital_clinicas",
+  "name": "Hospital de Clinicas",
+  "workingTime": 1
+}
+
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}

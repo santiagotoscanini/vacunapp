@@ -4,12 +4,14 @@ import bcrypt from 'bcryptjs';
 interface UserAttributes {
 	email: string;
 	password: string;
+	roles: string;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
 	class User extends Model<UserAttributes> implements UserAttributes {
 		email!: string;
 		password!: string;
+		roles!: string;
 
 		static associate(models: any) {
 		}
@@ -17,7 +19,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
 		async validPassword(password: string): Promise<boolean> {
 			return await bcrypt.compare(password, this.password);
 		}
-	};
+	}
 
 	User.init({
 		email: {
@@ -27,6 +29,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
 		password: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		roles: {
+			type: DataTypes.STRING
 		}
 	}, {
 		sequelize,
@@ -42,7 +47,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
 				throw new Error(err);
 			});
 	});
-
 
 	return User;
 };

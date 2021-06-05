@@ -6,12 +6,23 @@ services:
     container_name: pg-db
     image: postgres
     environment:
-      POSTGRES_USER: "$POSTGRES_USER"
-      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
+      POSTGRES_USER: "$DB_POSTGRES_USERNAME"
+      POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
     ports:
-      - '5432:5432'
+      - '$DB_POSTGRES_PORT:$DB_POSTGRES_PORT'
     volumes:
-      - vacunapp-db:/var/lib/postgresql/data
+      - vacunapp-pg-db:/var/lib/postgresql/data
+
+  mg-db:
+    container_name: mg-db
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
+      MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
+    ports:
+      - '$DB_MONGO_PORT:$DB_MONGO_PORT'
+    volumes:
+      - vacunapp-mg-db:/data/db
 
   login-service:
     container_name: login-service
@@ -19,18 +30,37 @@ services:
       context: services/login
       dockerfile: Dockerfile
     environment:
-      DB_DIALECT: "$DB_DIALECT"
-      DB_SCHEMA: "$DB_SCHEMA"
-      DB_USER: "$POSTGRES_USER"
-      DB_PASSWORD: "$POSTGRES_PASSWORD"
-      DB_HOST: "$DB_HOST"
+      DB_DIALECT: "$DB_POSTGRES_DIALECT"
+      DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
+      DB_USER: "$DB_POSTGRES_USERNAME"
+      DB_PASSWORD: "$DB_POSTGRES_PASSWORD"
+      DB_HOST: "$DB_POSTGRES_HOST"
       PORT: "$LOGIN_PORT"
       NODE_ENV: "$NODE_ENV"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
     depends_on:
-      - postgres
+      - pg-db
     ports:
       - "$LOGIN_PORT:$LOGIN_PORT"
 
+  vaccination-center-service:
+    container_name: vaccination-center-service
+    build:
+      context: services/vaccination-center
+      dockerfile: Dockerfile
+    environment:
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_HOST: "$DB_MONGO_HOST"
+      PORT: "$VACCINATION_CENTER_PORT"
+      NODE_ENV: "$NODE_ENV"
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+    depends_on:
+      - mg-db
+    ports:
+      - "$VACCINATION_CENTER_PORT:$VACCINATION_CENTER_PORT"
+
 volumes:
-  vacunapp-db:
+  vacunapp-pg-db:
+  vacunapp-mg-db:

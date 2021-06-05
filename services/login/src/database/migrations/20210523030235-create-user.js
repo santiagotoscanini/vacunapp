@@ -9,6 +9,9 @@ module.exports = {
 				password: {
 					type: Sequelize.STRING,
 					allowNull: false
+				},
+				roles: {
+					type: Sequelize.STRING
 				}
 			}
 		);

@@ -12,13 +12,18 @@ class LoginController {
 		if (user && await user.validPassword(password)) {
 			const tokenExpiration: number = 60 * 60 * 24; // 1 day
 
-			const token: string = jwt.sign(
-				{ email },
-				process.env.JWT_SECRET_KEY || 'dummy_token',
-				{ expiresIn: tokenExpiration }
-			);
+			try {
+				const token = await jwt.sign(
+					{ email: user.email, roles: user.roles },
+					process.env.JWT_SECRET_KEY || 'dummy_token',
+					{ expiresIn: tokenExpiration }
+				);
 
-			res.header('auth-token', token).json({ email });
+				res.header('auth-token', token).json({ email });
+
+			} catch (e) {
+				res.status(500).json({ 'message': 'internal server error' });
+			}
 		} else {
 			res.status(400).json({ 'message': 'bad credentials' });
 		}
