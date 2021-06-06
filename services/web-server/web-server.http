@@ -1,0 +1,33 @@
+### Login
+
+POST localhost:{{web-server-port}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "lorem@ipsum.com",
+  "password": "dolor_sit_amet"
+}
+
+> {% client.global.set("auth_token", response.headers.valueOf('auth-token')); %}
+
+### Create Vaccination Center
+
+POST localhost:{{web-server-port}}/vaccination-centers HTTP/1.1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "department": 2,
+  "departmentZone": 12,
+  "id": "hospital_clinicas",
+  "name": "Hospital de Clinicas",
+  "workingTime": 1
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 201, "Response status is not 200");
+});
+%}
+
+###

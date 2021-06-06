@@ -30,5 +30,4 @@
 We need to have in the root of the project the file `.env` for production and `.env.dev` for development.
 
 Those files define the variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_DIALECT`, `DB_SCHEMA`, `DB_HOST`
-, `NODE_ENV`
-, `LOGIN_PORT`.
+, `NODE_ENV` , `LOGIN_PORT`, among others.

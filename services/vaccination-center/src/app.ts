@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 
-import VaccinationCentersRoutes from './routes/vaccination.center.routes';
+import VaccinationCentersRoutes from './routes/vaccination-center.routes';
 
 export class App {
 	private app: Application;

@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 
+import VaccinationCentersRoutes from './routes/vaccination-center.routes';
 import LoginRoutes from './routes/login.routes';
 
 export class App {
@@ -16,10 +17,15 @@ export class App {
 	}
 
 	settings() {
-		this.app.set('port', this.port || process.env.PORT || 3000);
+		this.app.set('port', this.port || process.env.PORT || 3001);
 	}
 
 	middlewares() {
+		this.loggingMiddleware();
+		this.app.use(express.json());
+	}
+
+	loggingMiddleware() {
 		if (process.env.NODE_ENV == 'production') {
 			const morganLogStream = fs.createWriteStream(path.join(__dirname, '/../morgan.log'), { flags: 'a' });
 
@@ -31,11 +37,10 @@ export class App {
 		} else {
 			this.app.use(morgan('dev'));
 		}
-
-		this.app.use(express.json());
 	}
 
 	routes() {
+		this.app.use('/vaccination-centers', VaccinationCentersRoutes);
 		this.app.use('/login', LoginRoutes);
 	}
 

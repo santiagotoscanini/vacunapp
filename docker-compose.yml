@@ -1,9 +1,8 @@
-# TODO(santito): mongoDB service and left apps
-
 version: "3.8"
+
 services:
-  pg-db:
-    container_name: pg-db
+  postgres:
+    container_name: "$POSTGRES_CONTAINER_NAME"
     image: postgres
     environment:
       POSTGRES_USER: "$DB_POSTGRES_USERNAME"
@@ -11,10 +10,10 @@ services:
     ports:
       - '$DB_POSTGRES_PORT:$DB_POSTGRES_PORT'
     volumes:
-      - vacunapp-pg-db:/var/lib/postgresql/data
+      - postgres-volume:/var/lib/postgresql/data
 
-  mg-db:
-    container_name: mg-db
+  mongo:
+    container_name: "$MONGO_CONTAINER_NAME"
     image: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
@@ -22,45 +21,63 @@ services:
     ports:
       - '$DB_MONGO_PORT:$DB_MONGO_PORT'
     volumes:
-      - vacunapp-mg-db:/data/db
+      - mongo-volume:/data/db
 
-  login-service:
-    container_name: login-service
+  login:
+    container_name: "$LOGIN_CONTAINER_NAME"
     build:
       context: services/login
       dockerfile: Dockerfile
     environment:
-      DB_DIALECT: "$DB_POSTGRES_DIALECT"
-      DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
       DB_USER: "$DB_POSTGRES_USERNAME"
       DB_PASSWORD: "$DB_POSTGRES_PASSWORD"
-      DB_HOST: "$DB_POSTGRES_HOST"
+      DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
+      DB_DIALECT: "$DB_POSTGRES_DIALECT"
+      DB_HOST: "$POSTGRES_CONTAINER_NAME"
       PORT: "$LOGIN_PORT"
       NODE_ENV: "$NODE_ENV"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
     depends_on:
-      - pg-db
+      - postgres
     ports:
       - "$LOGIN_PORT:$LOGIN_PORT"
 
-  vaccination-center-service:
-    container_name: vaccination-center-service
+  vaccination-center:
+    container_name: "$VACCINATION_CENTER_CONTAINER_NAME"
     build:
       context: services/vaccination-center
       dockerfile: Dockerfile
     environment:
-      DB_SCHEMA: "$DB_MONGO_SCHEMA"
       DB_USER: "$DB_MONGO_USERNAME"
       DB_PASSWORD: "$DB_MONGO_PASSWORD"
-      DB_HOST: "$DB_MONGO_HOST"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "$MONGO_CONTAINER_NAME"
       PORT: "$VACCINATION_CENTER_PORT"
       NODE_ENV: "$NODE_ENV"
-      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
     depends_on:
-      - mg-db
+      - mongo
     ports:
       - "$VACCINATION_CENTER_PORT:$VACCINATION_CENTER_PORT"
 
+  web-server:
+    container_name: "$WEB_SERVER_CONTAINER_NAME"
+    build:
+      context: services/web-server
+      dockerfile: Dockerfile
+    environment:
+      PORT: "$WEB_SERVER_PORT"
+      NODE_ENV: "$NODE_ENV"
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      LOGIN_HOST: "$LOGIN_CONTAINER_NAME"
+      LOGIN_PORT: "$LOGIN_PORT"
+      VACCINATION_CENTER_HOST: "$VACCINATION_CENTER_CONTAINER_NAME"
+      VACCINATION_CENTER_PORT: "$VACCINATION_CENTER_PORT"
+    depends_on:
+      - login
+      - vaccination-center
+    ports:
+      - "$WEB_SERVER_PORT:$WEB_SERVER_PORT"
+
 volumes:
-  vacunapp-pg-db:
-  vacunapp-mg-db:
+  postgres-volume:
+  mongo-volume:

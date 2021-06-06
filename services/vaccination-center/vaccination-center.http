@@ -1,5 +1,5 @@
-POST localhost:3001/vaccination-centers HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVtQGlwc3VtLmNvbSIsInJvbGVzIjoiYWRtaW4iLCJpYXQiOjE2MjI3NzI0NzksImV4cCI6MTYyMjg1ODg3OX0.MjdAXcPeDYwVfLzOGC51Ms5Qp5t34rwG0cyPNVBy39M
+### Create Vaccination Center
+POST localhost:{{vaccination-centers-port}}/vaccination-centers HTTP/1.1
 Content-Type: application/json
 
 {

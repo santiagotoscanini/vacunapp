@@ -1,6 +1,6 @@
 import { App } from './app';
 
-import { vaccinationCenters } from './database/seeders/vaccination.centers';
+import { vaccinationCenters } from './database/seeders/vaccination-centers';
 import connectDB from './database/config';
 import VaccinationCenter from './database/models/vaccination-center';
 
