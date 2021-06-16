@@ -7,8 +7,8 @@ services:
     environment:
       POSTGRES_USER: "$DB_POSTGRES_USERNAME"
       POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
-    ports:
-      - '$DB_POSTGRES_PORT:$DB_POSTGRES_PORT'
+    expose:
+      - '$DB_POSTGRES_PORT'
     volumes:
       - postgres-volume:/var/lib/postgresql/data
 
@@ -18,8 +18,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
       MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
-    ports:
-      - '$DB_MONGO_PORT:$DB_MONGO_PORT'
+    expose:
+      - '$DB_MONGO_PORT'
     volumes:
       - mongo-volume:/data/db
 
@@ -34,16 +34,14 @@ services:
       DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
       DB_DIALECT: "$DB_POSTGRES_DIALECT"
       DB_HOST: "$POSTGRES_CONTAINER_NAME"
-      PORT: "$LOGIN_PORT"
       NODE_ENV: "$NODE_ENV"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
     depends_on:
       - postgres
-    ports:
-      - "$LOGIN_PORT:$LOGIN_PORT"
+    expose:
+      - "80"
 
   vaccination-center:
-    container_name: "$VACCINATION_CENTER_CONTAINER_NAME"
     build:
       context: services/vaccination-center
       dockerfile: Dockerfile
@@ -52,31 +50,54 @@ services:
       DB_PASSWORD: "$DB_MONGO_PASSWORD"
       DB_SCHEMA: "$DB_MONGO_SCHEMA"
       DB_HOST: "$MONGO_CONTAINER_NAME"
-      PORT: "$VACCINATION_CENTER_PORT"
       NODE_ENV: "$NODE_ENV"
     depends_on:
       - mongo
-    ports:
-      - "$VACCINATION_CENTER_PORT:$VACCINATION_CENTER_PORT"
+    expose:
+      - "80"
+    scale: 3
+
+  vaccination-center-reverse-proxy:
+    image: nginx
+    depends_on:
+      - vaccination-center
+    environment:
+      PORT: "80"
+      ADDRESS: "$VACCINATION_CENTER_CONTAINER_NAME"
+    expose:
+      - "80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/conf.d/mysite.template
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 
   web-server:
-    container_name: "$WEB_SERVER_CONTAINER_NAME"
     build:
       context: services/web-server
       dockerfile: Dockerfile
     environment:
-      PORT: "$WEB_SERVER_PORT"
       NODE_ENV: "$NODE_ENV"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
       LOGIN_HOST: "$LOGIN_CONTAINER_NAME"
-      LOGIN_PORT: "$LOGIN_PORT"
-      VACCINATION_CENTER_HOST: "$VACCINATION_CENTER_CONTAINER_NAME"
-      VACCINATION_CENTER_PORT: "$VACCINATION_CENTER_PORT"
+      VACCINATION_CENTER_HOST: "$VACCINATION_CENTER_REVERSE_PROXY_CONTAINER_NAME"
     depends_on:
       - login
       - vaccination-center
+    expose:
+      - "80"
+    scale: 3
+
+  web-server-reverse-proxy:
+    image: nginx
+    depends_on:
+      - web-server
+    environment:
+      PORT: "$WEB_SERVER_PORT"
+      ADDRESS: "$WEB_SERVER_CONTAINER_NAME"
     ports:
       - "$WEB_SERVER_PORT:$WEB_SERVER_PORT"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/conf.d/vacunapp.template
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/vacunapp.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 
 volumes:
   postgres-volume:

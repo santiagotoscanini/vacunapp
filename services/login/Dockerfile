@@ -20,6 +20,4 @@ RUN npm i --only=prod
 
 COPY --from=builder "/app/build/" "./build"
 
-EXPOSE $PORT
-
 CMD npm start

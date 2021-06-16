@@ -6,8 +6,7 @@ class LoginController {
 
 	public async login(req: Request, res: Response) {
 		const login_host: string = process.env.LOGIN_HOST || 'login-service.com';
-		const login_port: number = +(process.env.LOGIN_PORT || '3001');
-		const login_url: string = `http://${login_host}:${login_port}`;
+		const login_url: string = `http://${login_host}`;
 
 		const body = req.body;
 		console.log(login_url);

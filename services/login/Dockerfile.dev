@@ -4,5 +4,4 @@ WORKDIR /app
 COPY ./ ./
 RUN npm i
 
-EXPOSE $PORT
 CMD npm run dev
