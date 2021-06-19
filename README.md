@@ -31,3 +31,5 @@ We need to have in the root of the project the file `.env` for production and `.
 
 Those files define the variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_DIALECT`, `DB_SCHEMA`, `DB_HOST`
 , `NODE_ENV` , `LOGIN_PORT`, among others.
+
+Actually using beta version of `Typegoose` because of [this issue](https://github.com/typegoose/typegoose/issues/432) 

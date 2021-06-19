@@ -1,14 +1,14 @@
-import { Request, Response } from 'express';
-import VaccinationCenter from '../database/models/vaccination-center';
+import {Request, Response} from 'express';
+import {VaccinationCenterModel} from '../database/models/vaccination-center';
 
 class VaccinationCenterController {
 	public async create(req: Request, res: Response) {
-		const { id, name, workingTime, department, departmentZone } = req.body;
+		const {id, name, workingTime, department, departmentZone} = req.body;
 
-		let vaccinationCenter = await VaccinationCenter.findOne({ id: id });
+		let vaccinationCenter = await VaccinationCenterModel.findOne({id: id});
 
 		if (!vaccinationCenter) {
-			vaccinationCenter = new VaccinationCenter({
+			vaccinationCenter = new VaccinationCenterModel({
 				id: id,
 				name: name,
 				workingTime: workingTime,
@@ -20,9 +20,9 @@ class VaccinationCenterController {
 
 			res.status(200).json(vaccinationCenter);
 		} else {
-			res.status(400).json({ 'message': 'This vaccination center ID is being used' });
+			res.status(400).json({'message': 'This vaccination center ID is being used'});
 		}
 	}
 }
 
-export const vaccinationCenterController: VaccinationCenterController = new VaccinationCenterController();
+export default new VaccinationCenterController();

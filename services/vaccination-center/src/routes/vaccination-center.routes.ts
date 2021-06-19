@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { vaccinationCenterController } from '../controllers/vaccinationCenterController';
+import vaccinationCenterController from '../controllers/vaccinationCenterController';
 
 const router: Router = Router();
 

@@ -16,3 +16,53 @@ client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
 });
 %}
+
+### Create Vaccination Period
+POST localhost:{{vaccination-centers-port}}/vaccination-periods HTTP/1.1
+Content-Type: application/json
+
+{
+  "departmentId": 1,
+  "departmentZone": 4,
+  "vaccinationCenterId": "hospital_clinicas",
+  "dateFrom": {
+    "day": 4,
+    "month": 1,
+    "year": 2020
+  },
+  "dateTo": {
+    "day": 1,
+    "month": 3,
+    "year": 2020
+  },
+  "amountOfVaccines": 2,
+  "selectionCriteria": {
+    "age": {
+      "to": 18
+    }
+  }
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Create Valid reserve
+
+POST localhost:{{vaccination-centers-port}}/reserves HTTP/1.1
+Content-Type: application/json
+
+{
+  "userId": 12344,
+  "phone": "098381948",
+  "reserveDate": {
+    "day": 4,
+    "month": 2,
+    "year": 2020
+  },
+  "department":  1,
+  "departmentZone": 4,
+  "turn": 3
+}

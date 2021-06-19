@@ -30,4 +30,31 @@ client.test("Request executed successfully", function() {
 });
 %}
 
-###
+### Create Vaccination Period
+
+POST localhost:{{web-server-port}}/vaccination-centers/vaccination-period
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "departmentId": 1,
+  "departmentZone": 4,
+  "vaccinationCenterId": "antel_arena3",
+  "dateFrom": {
+    "day": 1,
+    "month": 2,
+    "year": 2020
+  },
+  "dateTo": {
+    "day": 1,
+    "month": 3,
+    "year": 2020
+  },
+  "amountOfVaccines": 2,
+  "selectionCriteria": {
+    "age": {
+      "from": 48,
+      "to": 46
+    }
+  }
+}

@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 
 import VaccinationCentersRoutes from './routes/vaccination-center.routes';
+import VaccinationPeriodsRoutes from './routes/vaccination-period.routes';
+import ReserveRoutes from './routes/reserve.routes';
 
 export class App {
 	private app: Application;
@@ -40,6 +42,8 @@ export class App {
 
 	routes() {
 		this.app.use('/vaccination-centers', VaccinationCentersRoutes);
+		this.app.use('/vaccination-periods', VaccinationPeriodsRoutes);
+		this.app.use('/reserves', ReserveRoutes)
 	}
 
 	async listen() {

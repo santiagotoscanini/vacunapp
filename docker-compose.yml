@@ -22,6 +22,7 @@ services:
       - '$DB_MONGO_PORT'
     volumes:
       - mongo-volume:/data/db
+    command: mongod --quiet --logpath /dev/null
 
   login:
     container_name: "$LOGIN_CONTAINER_NAME"
@@ -63,7 +64,7 @@ services:
       - vaccination-center
     environment:
       PORT: "80"
-      ADDRESS: "$VACCINATION_CENTER_CONTAINER_NAME"
+      ADDRESS: "vaccination-center"
     expose:
       - "80"
     volumes:
@@ -92,7 +93,7 @@ services:
       - web-server
     environment:
       PORT: "$WEB_SERVER_PORT"
-      ADDRESS: "$WEB_SERVER_CONTAINER_NAME"
+      ADDRESS: "web-server"
     ports:
       - "$WEB_SERVER_PORT:$WEB_SERVER_PORT"
     volumes:

@@ -1,37 +1,25 @@
-import { Document, Model, model, Schema } from 'mongoose';
+import { getModelForClass, prop } from '@typegoose/typegoose';
 
-export interface IVaccinationCenter extends Document {
-	id: string;
-	name: string;
-	workingTime: number;
-	department: number;
-	departmentZone: number;
+class VaccinationCenter {
+	@prop({type: String, required: true, unique: true})
+	public id?: string;
+
+	@prop({type: String, required: true})
+	public name?: string;
+
+	@prop({type: Number, required: true, enum: [1, 2, 3]})
+	public workingTime?: number;
+
+	@prop({type: Number, required: true, min: 1, max: 19})
+	public department?: number;
+
+	@prop({type: Number, required: true, min: 1, max: 50})
+	public departmentZone?: number;
 }
 
-const vaccinationCenterSchema: Schema = new Schema({
-	id: {
-		type: String,
-		required: true,
-		unique: true
-	},
-	name: {
-		type: String,
-		required: true
-	},
-	workingTime: {
-		type: Number,
-		required: true
-	},
-	department: {
-		type: Number,
-		required: true
-	},
-	departmentZone: {
-		type: Number,
-		required: true
-	}
-});
+const VaccinationCenterModel = getModelForClass(VaccinationCenter);
 
-const VaccinationCenter: Model<IVaccinationCenter> = model('VaccinationCenter', vaccinationCenterSchema);
-
-export default VaccinationCenter;
+export {
+	VaccinationCenter,
+	VaccinationCenterModel
+}
