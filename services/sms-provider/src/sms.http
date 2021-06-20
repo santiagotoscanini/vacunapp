@@ -1,0 +1,18 @@
+POST http://localhost:80/sms/1921
+Content-Type: application/json
+
+{
+  "reservationCode": 123,
+  "ci": 49218981,
+  "location": {
+    "department": "Paysandú",
+    "zoneId": 47,
+    "vaccinationCenter": "Antel Arena"
+  },
+  "reservationDate": "11/02/2021",
+  "timestamps": {
+    "begin": "00:01",
+    "end": "00:03",
+    "difference": "00:02"
+  }
+}

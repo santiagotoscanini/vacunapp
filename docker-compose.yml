@@ -100,6 +100,20 @@ services:
       - ./nginx.conf.template:/etc/nginx/conf.d/vacunapp.template
     command: /bin/bash -c "envsubst < /etc/nginx/conf.d/vacunapp.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 
+  id-provider:
+    build:
+      context: services/id-provider
+      dockerfile: Dockerfile
+    ports:
+      - "1234:80"
+
+  sms-provider:
+    build:
+      context: services/sms-provider
+      dockerfile: Dockerfile
+    ports:
+      - "1235:80"
+
 volumes:
   postgres-volume:
   mongo-volume:

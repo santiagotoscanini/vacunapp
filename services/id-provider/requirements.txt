@@ -1,0 +1,2 @@
+tornado==6.1
+pandas~=1.2.4
