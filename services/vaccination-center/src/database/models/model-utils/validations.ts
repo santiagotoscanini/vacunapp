@@ -14,4 +14,4 @@ export default {
 	maxPriorityGroup: [4, 'Maximum priority group is 4.'],
 	isGroupRequired: [true, 'Priority group is required.'],
 	workingTime: [[1, 2, 3], 'Must be one of [1, 2, 3]']
-} as const;
+} as const

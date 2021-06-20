@@ -1,4 +1,4 @@
-POST localhost:{{login-port}}/login HTTP/1.1
+POST localhost:{{login-port}}/login
 Content-Type: application/json
 
 {

@@ -8,7 +8,7 @@ Content-Type: application/json
   "password": "dolor_sit_amet"
 }
 
-> {% client.global.set("auth_token", response.headers.valueOf('auth-token')); %}
+> {% client.global.set("auth_token", response.headers.valueOf('auth-token')) %}
 
 ### Create Vaccination Center
 
@@ -26,8 +26,8 @@ Content-Type: application/json
 
 > {%
 client.test("Request executed successfully", function() {
-  client.assert(response.status === 201, "Response status is not 200");
-});
+  client.assert(response.status === 201, "Response status is not 200")
+})
 %}
 
 ### Create Vaccination Period

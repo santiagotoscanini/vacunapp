@@ -1,29 +1,29 @@
-import { VaccinationCenterModel } from '../models/vaccination-center';
-import { SelectionCriteriaModel } from '../models/selection-criteria/selectionCriteria';
-import { VaccinationPeriodModel } from '../models/vaccination-period';
-import { Types } from 'mongoose';
+import { VaccinationCenterModel } from '../models/vaccination-center'
+import { SelectionCriteriaModel } from '../models/selection-criteria/selectionCriteria'
+import { VaccinationPeriodModel } from '../models/vaccination-period'
+import { Types } from 'mongoose'
 
 class SeedMongoDb {
 	constructor() {
 		// ObjectId Format https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm
-		const vaccinationCenterId = new Types.ObjectId('5349b4ddd2781d08c09890f3');
+		const vaccinationCenterId = new Types.ObjectId('5349b4ddd2781d08c09890f3')
 
 		VaccinationCenterModel.exists({ '_id': vaccinationCenterId }).then(exists => {
-				console.log('Seeding...');
+				console.log('Seeding...')
 				if (!exists) {
-					console.log('Seed not detected, inserting data...');
-					SeedMongoDb.createVaccinationCenter(vaccinationCenterId);
+					console.log('Seed not detected, inserting data...')
+					SeedMongoDb.createVaccinationCenter(vaccinationCenterId)
 					const selectionCriteriaIds = [
 						new Types.ObjectId('5349b4ddd2781d08c09890f2'),
 						new Types.ObjectId('5349b4ddd2781d08c09890f1')
-					];
-					SeedMongoDb.createSelectionCriteria(selectionCriteriaIds);
-					SeedMongoDb.createVaccinationPeriod(vaccinationCenterId, selectionCriteriaIds);
+					]
+					SeedMongoDb.createSelectionCriteria(selectionCriteriaIds)
+					SeedMongoDb.createVaccinationPeriod(vaccinationCenterId, selectionCriteriaIds)
 				} else {
-					console.log('Seed already detected...');
+					console.log('Seed already detected...')
 				}
 			}
-		);
+		)
 	}
 
 	private static async createVaccinationCenter(vaccinationCenterId: Types.ObjectId) {
@@ -35,7 +35,7 @@ class SeedMongoDb {
 			'name': 'Antel Arena',
 			'departmentZone': 12,
 			'department': 3
-		});
+		})
 	}
 
 	private static async createSelectionCriteria(selectionCriteriaIds: Types.ObjectId[]) {
@@ -56,8 +56,8 @@ class SeedMongoDb {
 					'criteria': 'priorityGroup',
 					'group': 1
 				}
-			]);
-		return selectionCriteria.map(sc => sc._id);
+			])
+		return selectionCriteria.map(sc => sc._id)
 	}
 
 	private static async createVaccinationPeriod(vaccinationCenterId: any, selectionCriteriaIds: any) {
@@ -79,8 +79,8 @@ class SeedMongoDb {
 			'departmentZone': 4,
 			'selectionCriteriaId': selectionCriteriaIds[1],
 			'vaccinationCenterId': vaccinationCenterId
-		}]);
+		}])
 	}
 }
 
-export default SeedMongoDb;
+export default SeedMongoDb

@@ -8,9 +8,9 @@ type ReserveRequestModelAttributes = {
 }
 
 export class ReserveRequestDto {
-	attributes: ReserveRequestModelAttributes;
+	attributes: ReserveRequestModelAttributes
 
 	constructor(attributes: ReserveRequestModelAttributes) {
-		this.attributes = attributes;
+		this.attributes = attributes
 	}
 }

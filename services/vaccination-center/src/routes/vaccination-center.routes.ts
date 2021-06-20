@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router } from 'express'
 
-import vaccinationCenterController from '../controllers/vaccinationCenterController';
+import vaccinationCenterController from '../controllers/vaccinationCenterController'
 
-const router: Router = Router();
+const router: Router = Router()
 
-router.post('/', vaccinationCenterController.create);
+router.post('/', vaccinationCenterController.create)
 
-export default router;
+export default router

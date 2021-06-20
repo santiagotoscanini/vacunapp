@@ -1,23 +1,23 @@
-import { CreateOptions, Model } from 'sequelize';
-import bcrypt from 'bcryptjs';
+import { CreateOptions, Model } from 'sequelize'
+import bcrypt from 'bcryptjs'
 
 interface UserAttributes {
-	email: string;
-	password: string;
-	roles: string;
+	email: string
+	password: string
+	roles: string
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
 	class User extends Model<UserAttributes> implements UserAttributes {
-		email!: string;
-		password!: string;
-		roles!: string;
+		email!: string
+		password!: string
+		roles!: string
 
 		static associate(models: any) {
 		}
 
 		async validPassword(password: string): Promise<boolean> {
-			return await bcrypt.compare(password, this.password);
+			return await bcrypt.compare(password, this.password)
 		}
 	}
 
@@ -36,17 +36,17 @@ module.exports = (sequelize: any, DataTypes: any) => {
 	}, {
 		sequelize,
 		modelName: 'User'
-	});
+	})
 
 	User.beforeCreate(async (user: User, options: CreateOptions<UserAttributes>) => {
 		return await bcrypt.hash(user.password, 10)
 			.then(hash => {
-				user.password = hash;
+				user.password = hash
 			})
 			.catch(err => {
-				throw new Error(err);
-			});
-	});
+				throw new Error(err)
+			})
+	})
 
-	return User;
-};
+	return User
+}

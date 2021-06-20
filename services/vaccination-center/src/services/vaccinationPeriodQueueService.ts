@@ -1,6 +1,6 @@
-import { VaccinationPeriod } from '../database/models/vaccination-period';
-import { ReserveModel } from '../database/models/reserve';
-import ReserveService from './reserveService';
+import { VaccinationPeriod } from '../database/models/vaccination-period'
+import { ReserveModel } from '../database/models/reserve'
+import ReserveService from './reserveService'
 
 class VaccinationPeriodQueueService {
 	public static async processVaccinationPeriod(vaccinationPeriod: VaccinationPeriod) {
@@ -16,15 +16,15 @@ class VaccinationPeriodQueueService {
 			.cursor()
 			.eachAsync(async function(reserve) {
 				if (!reserve.isProcessed) {
-					reserve.isProcessed = true;
-					reserve.vaccinationCenterId = vaccinationPeriod?.vaccinationCenterId;
-					reserve.statusMessage = 'Reserve made successfully';
-					await reserve.save();
+					reserve.isProcessed = true
+					reserve.vaccinationCenterId = vaccinationPeriod?.vaccinationCenterId
+					reserve.statusMessage = 'Reserve made successfully'
+					await reserve.save()
 
-					await ReserveService.updateVaccinationPeriod(vaccinationPeriod);
+					await ReserveService.updateVaccinationPeriod(vaccinationPeriod)
 				}
-			});
+			})
 	}
 }
 
-export default VaccinationPeriodQueueService;
+export default VaccinationPeriodQueueService

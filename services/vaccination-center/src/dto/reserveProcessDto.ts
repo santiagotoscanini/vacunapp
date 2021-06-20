@@ -1,5 +1,5 @@
-import { VaccinationCenter } from '../database/models/vaccination-center';
-import { Ref } from '@typegoose/typegoose';
+import { VaccinationCenter } from '../database/models/vaccination-center'
+import { Ref } from '@typegoose/typegoose'
 
 type ReserveProcessModelAttributes = {
 	vaccinationCenterId?: Ref<VaccinationCenter>,
@@ -9,9 +9,9 @@ type ReserveProcessModelAttributes = {
 }
 
 export class ReserveProcessDto {
-	attributes: ReserveProcessModelAttributes;
+	attributes: ReserveProcessModelAttributes
 
 	constructor(attributes: ReserveProcessModelAttributes) {
-		this.attributes = attributes;
+		this.attributes = attributes
 	}
 }

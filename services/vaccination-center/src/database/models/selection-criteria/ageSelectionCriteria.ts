@@ -1,10 +1,10 @@
-import { getDiscriminatorModelForClass, prop } from '@typegoose/typegoose';
-import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria';
-import validations from '../model-utils/validations';
+import { getDiscriminatorModelForClass, prop } from '@typegoose/typegoose'
+import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria'
+import validations from '../model-utils/validations'
 
 const validator = function(this: any, value: number) {
-	return value <= this.to;
-};
+	return value <= this.to
+}
 
 class AgeSelectionCriteria extends SelectionCriteria {
 	@prop({
@@ -13,10 +13,10 @@ class AgeSelectionCriteria extends SelectionCriteria {
 			validator, message: validations.fromGreaterThanToErrorMessage
 		}
 	})
-	public from!: number;
+	public from!: number
 
 	@prop({ type: Number, default: validations.toDefaultAge, min: validations.minAge, max: validations.maxAge })
-	public to!: number;
+	public to!: number
 }
 
-export default getDiscriminatorModelForClass(SelectionCriteriaModel, AgeSelectionCriteria);
+export default getDiscriminatorModelForClass(SelectionCriteriaModel, AgeSelectionCriteria)

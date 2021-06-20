@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router } from 'express'
 
-import reserveController from '../controllers/reserveController';
+import reserveController from '../controllers/reserveController'
 
-const router: Router = Router();
+const router: Router = Router()
 
-router.post('/', reserveController.create);
+router.post('/', reserveController.create)
 
-export default router;
+export default router

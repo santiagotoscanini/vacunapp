@@ -1,8 +1,8 @@
 export class RequestError extends Error {
-	public status: number;
+	public status: number
 
 	constructor(message?: string, status?: number) {
-		super(message || 'Unknown Error');
-		this.status = status || 500;
+		super(message || 'Unknown Error')
+		this.status = status || 500
 	}
 }

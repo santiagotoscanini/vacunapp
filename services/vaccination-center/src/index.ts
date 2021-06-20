@@ -1,14 +1,14 @@
-import { App } from './app';
+import { App } from './app'
 
-import connectDB from './database/config';
-import SeedMongoDb from './database/seeders/SeedMongoDb';
+import connectDB from './database/config'
+import SeedMongoDb from './database/seeders/SeedMongoDb'
 
 async function main() {
-	await connectDB();
-	new SeedMongoDb();
+	await connectDB()
+	new SeedMongoDb()
 
-	const app = new App();
-	await app.listen();
+	const app = new App()
+	await app.listen()
 }
 
-main();
+main()

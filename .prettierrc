@@ -4,5 +4,7 @@
   "tabWidth": 2,
   "singleQuote": true,
   "trailingComma": "none",
-  "trailingSpace": "al"
+  "trailingSpace": "al",
+  "editor.formatOnSave": true,
+  "prettier.semi": false
 }

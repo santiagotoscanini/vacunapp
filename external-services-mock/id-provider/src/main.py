@@ -1,4 +1,5 @@
 from abc import ABC
+import json
 
 import tornado.web
 import tornado.ioloop
@@ -19,7 +20,7 @@ class GetInformationByIdRequestHandler(tornado.web.RequestHandler, ABC):
             })
         else:
             self.set_status(404)
-            self.finish('{"error":"Id not found"}')
+            self.write({"error": "Id not found"})
 
 
 if __name__ == "__main__":

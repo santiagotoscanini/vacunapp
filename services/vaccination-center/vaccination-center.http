@@ -1,5 +1,5 @@
 ### Create Vaccination Center
-POST localhost:{{vaccination-centers-port}}/vaccination-centers HTTP/1.1
+POST localhost:{{vaccination-centers-port}}/vaccination-centers
 Content-Type: application/json
 
 {
@@ -10,7 +10,6 @@ Content-Type: application/json
   "workingTime": 1
 }
 
-
 > {%
 client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
@@ -18,7 +17,7 @@ client.test("Request executed successfully", function() {
 %}
 
 ### Create Vaccination Period
-POST localhost:{{vaccination-centers-port}}/vaccination-periods HTTP/1.1
+POST localhost:{{vaccination-centers-port}}/vaccination-periods
 Content-Type: application/json
 
 {
@@ -51,7 +50,7 @@ client.test("Request executed successfully", function() {
 
 ### Create Valid reserve
 
-POST localhost:{{vaccination-centers-port}}/reserves HTTP/1.1
+POST localhost:{{vaccination-centers-port}}/reserves
 Content-Type: application/json
 
 {

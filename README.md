@@ -23,13 +23,18 @@
 
 ### Development
 
-`docker compose -f docker-compose.dev.yml --env-file .env.dev up`
+`docker compose -f docker-compose.dev.yml up`
 
 # IMPORTANT
 
-We need to have in the root of the project the file `.env` for production and `.env.dev` for development.
+We need to have in the root of the project the file `.env` (this file is source versioned for easy share, but never
+should contain things like AWS Access Keys or Secrets)
 
-Those files define the variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_DIALECT`, `DB_SCHEMA`, `DB_HOST`
-, `NODE_ENV` , `LOGIN_PORT`, among others.
+This file defines the variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_DIALECT`, `DB_SCHEMA`, `DB_HOST`
+, `NODE_ENV` , `LOGIN_PORT`, among others that are used in `docker-compose*` files.
 
-Actually using beta version of `Typegoose` because of [this issue](https://github.com/typegoose/typegoose/issues/432) 
+### Issues
+
+* Actually using beta version of `Typegoose` because of [this issue](https://github.com/typegoose/typegoose/issues/432)
+* We have to subtract one for months in `Mongoose` because
+  of [this issue](https://stackoverflow.com/questions/37388552/mongoose-increment-the-date-field-of-a-mongo-collection-by-one-month)

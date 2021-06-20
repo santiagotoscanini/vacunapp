@@ -1,34 +1,34 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose';
-import { SelectionCriteria } from './selection-criteria/selectionCriteria';
-import { VaccinationCenter } from './vaccination-center';
-import validations from '../models/model-utils/validations';
+import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
+import { SelectionCriteria } from './selection-criteria/selectionCriteria'
+import { VaccinationCenter } from './vaccination-center'
+import validations from '../models/model-utils/validations'
 
 class VaccinationPeriod {
 	@prop({ type: Number, required: true, min: validations.minDepartmentId, max: validations.maxDepartmentId })
-	public departmentId?: number;
+	public departmentId?: number
 
 	@prop({ type: Number, required: true, min: validations.minDepartmentZone, max: validations.maxDepartmentZone })
-	public departmentZone?: number;
+	public departmentZone?: number
 
 	@prop({ ref: 'VaccinationCenter', required: true })
-	public vaccinationCenterId?: Ref<VaccinationCenter>;
+	public vaccinationCenterId?: Ref<VaccinationCenter>
 
 	@prop({ type: Date, required: true })
-	public dateFrom?: Date;
+	public dateFrom?: Date
 
 	@prop({ type: Date, required: true })
-	public dateTo?: Date;
+	public dateTo?: Date
 
 	@prop({ type: Number, required: true, min: validations.minAmountOfVaccines })
-	public amountOfVaccines?: number;
+	public amountOfVaccines?: number
 
 	@prop({ ref: 'SelectionCriteria', required: true })
-	public selectionCriteriaId?: Ref<SelectionCriteria>;
+	public selectionCriteriaId?: Ref<SelectionCriteria>
 }
 
-const VaccinationPeriodModel = getModelForClass(VaccinationPeriod);
+const VaccinationPeriodModel = getModelForClass(VaccinationPeriod)
 
 export {
 	VaccinationPeriod,
 	VaccinationPeriodModel
-};
+}

@@ -1,31 +1,37 @@
 version: "3.8"
 
 services:
-  postgres:
-    container_name: "$POSTGRES_CONTAINER_NAME"
-    image: postgres
+  web-server-reverse-proxy:
+    image: nginx
+    depends_on:
+      - web-server
     environment:
-      POSTGRES_USER: "$DB_POSTGRES_USERNAME"
-      POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
-    expose:
-      - '$DB_POSTGRES_PORT'
+      ADDRESS: "web-server"
+    ports:
+      - "$WEB_SERVER_NGINX_PORT:80"
     volumes:
-      - postgres-volume:/var/lib/postgresql/data
+      - ./nginx.conf.template:/etc/nginx/conf.d/vacunapp.template
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/vacunapp.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 
-  mongo:
-    container_name: "$MONGO_CONTAINER_NAME"
-    image: mongo
+  web-server:
+    build:
+      context: services/web-server
+      dockerfile: Dockerfile
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
-      MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      LOGIN_HOST: "login"
+      VACCINATION_CENTER_HOST: "vaccination-center"
+      RESERVE_HOST: "reserve-reverse-proxy"
+      NODE_ENV: "production"
+    depends_on:
+      - login
+      - vaccination-center
+      - reserve-reverse-proxy
     expose:
-      - '$DB_MONGO_PORT'
-    volumes:
-      - mongo-volume:/data/db
-    command: mongod --quiet --logpath /dev/null
+      - "80"
+    scale: 3
 
   login:
-    container_name: "$LOGIN_CONTAINER_NAME"
     build:
       context: services/login
       dockerfile: Dockerfile
@@ -34,13 +40,23 @@ services:
       DB_PASSWORD: "$DB_POSTGRES_PASSWORD"
       DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
       DB_DIALECT: "$DB_POSTGRES_DIALECT"
-      DB_HOST: "$POSTGRES_CONTAINER_NAME"
-      NODE_ENV: "$NODE_ENV"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      DB_HOST: "postgres"
+      NODE_ENV: "production"
     depends_on:
       - postgres
     expose:
       - "80"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: "$DB_POSTGRES_USERNAME"
+      POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
+    expose:
+      - '5432'
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
 
   vaccination-center:
     build:
@@ -50,69 +66,77 @@ services:
       DB_USER: "$DB_MONGO_USERNAME"
       DB_PASSWORD: "$DB_MONGO_PASSWORD"
       DB_SCHEMA: "$DB_MONGO_SCHEMA"
-      DB_HOST: "$MONGO_CONTAINER_NAME"
-      NODE_ENV: "$NODE_ENV"
+      DB_HOST: "mongo"
+      NODE_ENV: "production"
     depends_on:
       - mongo
+      - redis
     expose:
-      - "80"
-    scale: 3
+      - 80
 
-  vaccination-center-reverse-proxy:
+  redis:
+    image: "redis:alpine"
+    expose:
+      - 6379
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
+      MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
+    expose:
+      - '27017'
+    volumes:
+      - mongo-volume:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  reserve-reverse-proxy:
     image: nginx
     depends_on:
-      - vaccination-center
+      - reserve-service
     environment:
-      PORT: "80"
-      ADDRESS: "vaccination-center"
+      ADDRESS: "reserve-service"
     expose:
       - "80"
     volumes:
       - ./nginx.conf.template:/etc/nginx/conf.d/mysite.template
     command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 
-  web-server:
+  reserve-service:
     build:
-      context: services/web-server
+      context: services/vaccination-center
       dockerfile: Dockerfile
     environment:
-      NODE_ENV: "$NODE_ENV"
-      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
-      LOGIN_HOST: "$LOGIN_CONTAINER_NAME"
-      VACCINATION_CENTER_HOST: "$VACCINATION_CENTER_REVERSE_PROXY_CONTAINER_NAME"
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: production
     depends_on:
-      - login
-      - vaccination-center
+      - mongo
+      - id-provider-service-mock
+      - sms-provider-service-mock
     expose:
       - "80"
     scale: 3
 
-  web-server-reverse-proxy:
-    image: nginx
-    depends_on:
-      - web-server
+  id-provider-service-mock:
+    build:
+      context: external-services-mock/id-provider
+      dockerfile: Dockerfile
+    expose:
+      - "80"
     environment:
-      PORT: "$WEB_SERVER_PORT"
-      ADDRESS: "web-server"
-    ports:
-      - "$WEB_SERVER_PORT:$WEB_SERVER_PORT"
-    volumes:
-      - ./nginx.conf.template:/etc/nginx/conf.d/vacunapp.template
-    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/vacunapp.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+      PYTHONUNBUFFERED: 1
 
-  id-provider:
+  sms-provider-service-mock:
     build:
-      context: services/id-provider
+      context: external-services-mock/sms-provider
       dockerfile: Dockerfile
-    ports:
-      - "1234:80"
-
-  sms-provider:
-    build:
-      context: services/sms-provider
-      dockerfile: Dockerfile
-    ports:
-      - "1235:80"
+    expose:
+      - "80"
+    environment:
+      PYTHONUNBUFFERED: 1
 
 volumes:
   postgres-volume:

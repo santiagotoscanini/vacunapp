@@ -1,6 +1,6 @@
-import { getDiscriminatorModelForClass, prop } from '@typegoose/typegoose';
-import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria';
-import validations from '../model-utils/validations';
+import { getDiscriminatorModelForClass, prop } from '@typegoose/typegoose'
+import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria'
+import validations from '../model-utils/validations'
 
 class PriorityGroupSelectionCriteria extends SelectionCriteria {
 	@prop({
@@ -10,7 +10,7 @@ class PriorityGroupSelectionCriteria extends SelectionCriteria {
 		min: validations.minPriorityGroup,
 		max: validations.maxPriorityGroup
 	})
-	public group!: number;
+	public group!: number
 }
 
-export default getDiscriminatorModelForClass(SelectionCriteriaModel, PriorityGroupSelectionCriteria);
+export default getDiscriminatorModelForClass(SelectionCriteriaModel, PriorityGroupSelectionCriteria)

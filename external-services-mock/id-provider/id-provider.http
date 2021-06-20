@@ -1,0 +1,5 @@
+### GOOD
+GET http://localhost:{{id-provider-port}}/information/10052409
+
+### BAD
+GET http://localhost:{{id-provider-port}}/information/10052408

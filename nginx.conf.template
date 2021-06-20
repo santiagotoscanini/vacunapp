@@ -5,7 +5,7 @@ events {
 }
 http {
         server {
-              listen '${PORT}';
+              listen 80;
               location / {
                 proxy_pass "http://${ADDRESS}";
               }

@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router } from 'express'
 
-import { vaccinationCenterController } from '../controllers/vaccinationCenterController';
-import authorizationMiddleware from '../middlewares/authorization';
+import { vaccinationCenterController } from '../controllers/vaccinationCenterController'
+import authorizationMiddleware from '../middlewares/authorization'
 
-const router: Router = Router();
+const router: Router = Router()
 
-router.post('/', authorizationMiddleware, vaccinationCenterController.create);
-router.post('/vaccination-period', authorizationMiddleware, vaccinationCenterController.createPeriod);
+router.post('/', authorizationMiddleware, vaccinationCenterController.create)
+router.post('/vaccination-period', authorizationMiddleware, vaccinationCenterController.createPeriod)
 
-export default router;
+export default router

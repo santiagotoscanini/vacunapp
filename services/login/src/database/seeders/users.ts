@@ -9,4 +9,4 @@ export const users = [
 		password: 'dolor_sit_amet',
 		roles: 'admin'
 	}
-];
+]

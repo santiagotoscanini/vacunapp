@@ -1,0 +1,7 @@
+POST http://localhost:{{sms-port}}/sms/092340489
+Content-Type: application/json
+
+{
+  "message": "Código de reserva: 123\nCédula de Identidad: 49218981\nInformación de reserva:\n* Departamento: Paysandú\n* Zona: 34\n* Código de vacunatorio: Shopping\n* Fecha: 3/2/2020\n\nTimestamps:\n* Inicio: 00:01\n* Fin: 00:03\n* Diferencia: 00:02"
+}
+
