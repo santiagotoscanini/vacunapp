@@ -1,26 +1,31 @@
-import {Request, Response} from 'express';
-import {VaccinationCenterModel} from '../database/models/vaccination-center';
+import { NextFunction, Request, Response } from 'express';
+import { VaccinationCenterModel } from '../database/models/vaccination-center';
+import { RequestError } from '../middlewares/errorHandler/RequestError';
 
 class VaccinationCenterController {
-	public async create(req: Request, res: Response) {
-		const {id, name, workingTime, department, departmentZone} = req.body;
+	public async create(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id, name, workingTime, department, departmentZone } = req.body;
 
-		let vaccinationCenter = await VaccinationCenterModel.findOne({id: id});
+			let vaccinationCenter = await VaccinationCenterModel.findOne({ id: id });
 
-		if (!vaccinationCenter) {
-			vaccinationCenter = new VaccinationCenterModel({
-				id: id,
-				name: name,
-				workingTime: workingTime,
-				department: department,
-				departmentZone: departmentZone
-			});
+			if (!vaccinationCenter) {
+				vaccinationCenter = new VaccinationCenterModel({
+					id: id,
+					name: name,
+					workingTime: workingTime,
+					department: department,
+					departmentZone: departmentZone
+				});
 
-			await vaccinationCenter.save();
+				await vaccinationCenter.save();
 
-			res.status(200).json(vaccinationCenter);
-		} else {
-			res.status(400).json({'message': 'This vaccination center ID is being used'});
+				res.status(200).json(vaccinationCenter);
+			} else {
+				throw new RequestError('This vaccination center ID is being used', 400);
+			}
+		} catch(e) {
+			next(e);
 		}
 	}
 }

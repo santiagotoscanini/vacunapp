@@ -34,7 +34,7 @@ class ReserveService {
 	}
 
 	private static filterVaccinationPeriodsWithTurn(requestModel: ReserveRequestModel,
-	vaccinationPeriods: Array<VaccinationPeriod>) {
+																									vaccinationPeriods: Array<VaccinationPeriod>) {
 		// @ts-ignore
 		return vaccinationPeriods.find((x) => x.vaccinationCenterId?.workingTime == requestModel.attributes.turn);
 	}

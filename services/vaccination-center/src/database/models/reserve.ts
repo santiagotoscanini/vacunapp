@@ -1,7 +1,6 @@
 import { getModelForClass, pre, prop, Ref } from '@typegoose/typegoose';
 import { VaccinationCenter } from './vaccination-center';
 import { User } from './user';
-
 const Crypto = require('crypto')
 
 function generateReserveCode(): string {
@@ -30,10 +29,7 @@ class Reserve {
 	@prop({type: Date})
 	public vaccinationDay?: Date;
 
-	@prop({type: String})
-	public statusMessage?: string;
-
-	@prop({type: Date, required: true})
+	@prop({type: Date})
 	public timeStampInit?: Date;
 
 	@prop({type: Date})
@@ -41,6 +37,9 @@ class Reserve {
 
 	@prop({type: Number})
 	public processTime?: number;
+
+	@prop({type: String})
+	public statusMessage?: string;
 }
 
 const ReserveModel = getModelForClass(Reserve);

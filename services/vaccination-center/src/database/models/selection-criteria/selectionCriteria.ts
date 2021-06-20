@@ -1,7 +1,9 @@
 import {prop, getModelForClass} from "@typegoose/typegoose";
+import validations from '../model-utils/validations';
 
 class SelectionCriteria {
-	@prop({type: String, required: [true, 'Criteria is required.']})
+	// @ts-ignore
+	@prop({type: String, required: validations.isCriteriaRequired})
 	public criteria!: string;
 }
 

@@ -5,6 +5,7 @@ import fs from 'fs';
 
 import VaccinationCentersRoutes from './routes/vaccination-center.routes';
 import LoginRoutes from './routes/login.routes';
+import errorHandler from './middlewares/errorHandler/errorHandler';
 
 export class App {
 	private app: Application;
@@ -12,15 +13,16 @@ export class App {
 	constructor(private port?: number | string) {
 		this.app = express();
 		this.settings();
-		this.middlewares();
+		this.preMiddlewares();
 		this.routes();
+		this.postMiddlewares();
 	}
 
 	settings() {
 		this.app.set('port', this.port || process.env.PORT || 80);
 	}
 
-	middlewares() {
+	preMiddlewares() {
 		this.loggingMiddleware();
 		this.app.use(express.json());
 	}
@@ -37,6 +39,10 @@ export class App {
 		} else {
 			this.app.use(morgan('dev'));
 		}
+	}
+
+	postMiddlewares() {
+		this.app.use(errorHandler);
 	}
 
 	routes() {

@@ -1,4 +1,4 @@
-import { getModelForClass, prop } from '@typegoose/typegoose';
+import { getModelForClass, prop, Ref } from '@typegoose/typegoose';
 
 class User {
 	@prop({type: String, required: true, unique: true})
@@ -14,3 +14,4 @@ export {
 	User,
 	UserModel
 }
+

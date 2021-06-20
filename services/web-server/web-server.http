@@ -19,8 +19,8 @@ Content-Type: application/json
 {
   "department": 2,
   "departmentZone": 12,
-  "id": "hospital_clinicas",
-  "name": "Hospital de Clinicas",
+  "id": "antel_arena",
+  "name": "Antel Arena",
   "workingTime": 1
 }
 
@@ -39,7 +39,7 @@ Content-Type: application/json
 {
   "departmentId": 1,
   "departmentZone": 4,
-  "vaccinationCenterId": "antel_arena3",
+  "vaccinationCenterId": "antel_arena",
   "dateFrom": {
     "day": 1,
     "month": 2,

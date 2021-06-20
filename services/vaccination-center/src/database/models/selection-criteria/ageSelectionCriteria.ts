@@ -1,24 +1,22 @@
-import {prop, getDiscriminatorModelForClass} from "@typegoose/typegoose";
-import {SelectionCriteria, SelectionCriteriaModel} from "./selectionCriteria";
+import { prop, getDiscriminatorModelForClass } from '@typegoose/typegoose';
+import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria';
+import validations from '../model-utils/validations';
 
-const min = [18, 'Minimum Age supported is 18.']
-const max = [106, 'Maximum Age supported is 106.']
-
-const validator = function (this: any, value: number) {
+const validator = function(this: any, value: number) {
 	return value <= this.to;
-}
+};
 
 class AgeSelectionCriteria extends SelectionCriteria {
 	@prop({
-		type: Number, default: 18, min, max,
+		type: Number, default: validations.fromDefaultAge, min: validations.minAge, max: validations.maxAge,
 		validate: {
-			validator, message: "The Age from cannot be greater than age to."
+			validator, message: validations.fromGreaterThanToErrorMessage
 		}
 	})
-	public from!: number
+	public from!: number;
 
-	@prop({type: Number, default: 106, min, max})
-	public to!: number
+	@prop({ type: Number, default: validations.toDefaultAge, min: validations.minAge, max: validations.maxAge })
+	public to!: number;
 }
 
-export default getDiscriminatorModelForClass(SelectionCriteriaModel, AgeSelectionCriteria)
+export default getDiscriminatorModelForClass(SelectionCriteriaModel, AgeSelectionCriteria);
