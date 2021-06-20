@@ -24,7 +24,7 @@ class VaccinationCenterController {
 			} else {
 				throw new RequestError('This vaccination center ID is being used', 400);
 			}
-		} catch(e) {
+		} catch (e) {
 			next(e);
 		}
 	}

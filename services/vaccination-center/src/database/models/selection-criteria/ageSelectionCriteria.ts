@@ -1,4 +1,4 @@
-import { prop, getDiscriminatorModelForClass } from '@typegoose/typegoose';
+import { getDiscriminatorModelForClass, prop } from '@typegoose/typegoose';
 import { SelectionCriteria, SelectionCriteriaModel } from './selectionCriteria';
 import validations from '../model-utils/validations';
 

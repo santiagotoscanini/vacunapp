@@ -1,43 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
-import ReserveService from '../services/reserveService';
-import { RequestError } from '../middlewares/errorHandler/RequestError';
-import { UserModel } from '../database/models/user';
-import { ReserveRequestModel } from '../models/ReserveRequestModel';
+import { User, UserModel } from '../database/models/user';
 import { ReserveModel } from '../database/models/reserve';
+import ReserveService from '../services/reserveService';
+import { ReserveProcessDto } from '../dto/reserveProcessDto';
+import { ReserveRequestDto } from '../dto/reserveRequestDto';
+import { RequestError } from '../middlewares/errorHandler/RequestError';
 
 class ReserveController {
-	public async create(req: Request, res: Response, next: NextFunction) {
-		try {
-			const { userId, phone } = req.body;
-			let user = await ReserveController.getUser(userId);
-
-			if (!user) {
-				const timeStampInit = Date.now();
-				user = await ReserveController.saveUser(userId, phone);
-
-				const requestModel = ReserveController.getReserveRequestModel(req.body);
-				const reserveProcessModel = await ReserveService.createReserve(requestModel);
-				const reserve = await ReserveController.saveReserve({
-					user: user,
-					reserveProcessModel: reserveProcessModel,
-					timeStampInit: timeStampInit
-				});
-
-				res.status(200).json(reserve);
-			} else {
-				throw new RequestError('This user is already registered to vaccinate', 400);
-			}
-		} catch (e) {
-			next(e);
-		}
-	}
-
-	private static async saveUser(userId: string, phone: string) {
+	private static async saveUser(reserveRequestDto: ReserveRequestDto) {
 		const user = new UserModel({
-			id: userId,
-			phone: phone
+			id: reserveRequestDto.attributes.userId,
+			phone: reserveRequestDto.attributes.phone
 		});
 		await user.save();
+
 		return user;
 	}
 
@@ -46,30 +22,59 @@ class ReserveController {
 	}
 
 	private static getReserveRequestModel(body: { [index: string]: any }) {
-		const { reserveDate, department, departmentZone, turn } = body;
-		return new ReserveRequestModel({
+		const { userId, phone, reserveDate, department, departmentZone, turn } = body;
+
+		return new ReserveRequestDto({
 			// Month minus one, mongoose issue https://stackoverflow.com/questions/37388552/mongoose-increment-the-date-field-of-a-mongo-collection-by-one-month
 			reserveDate: new Date(reserveDate['year'], reserveDate['month'] - 1, reserveDate['day']),
 			department: department,
 			departmentZone: departmentZone,
-			turn: turn
+			turn: turn,
+			userId: userId,
+			phone: phone
 		});
 	}
 
-	private static async saveReserve(body: { [index: string]: any }) {
-		const { user, reserveProcessModel, timeStampInit } = body;
+	private static async saveReserve(
+		user: User,
+		reserveProcessDto: ReserveProcessDto,
+		timeStampInit: number,
+		reserveRequestDto: ReserveRequestDto
+	) {
 		const timeStampFinish = Date.now();
-		const processTime = timeStampFinish - timeStampInit;
 		const reserve = new ReserveModel({
 			userId: user,
-			vaccinationCenterId: reserveProcessModel.attributes.vaccinationCenterId,
-			vaccinationDay: reserveProcessModel.attributes.vaccinationDay,
-			statusMessage: reserveProcessModel.attributes.statusMessage,
-			timeStampInit: timeStampInit,
+			department: reserveRequestDto.attributes.department,
+			departmentZone: reserveRequestDto.attributes.departmentZone,
+			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
+			vaccinationDay: reserveProcessDto.attributes.vaccinationDay ?? reserveRequestDto.attributes.reserveDate,
+			statusMessage: reserveProcessDto.attributes.statusMessage,
 			timeStampFinish: timeStampFinish,
-			processTime: processTime
+			timeStampInit: timeStampInit,
+			isProcessed: reserveProcessDto.attributes.success
 		});
 		return reserve.save();
+	}
+
+	public async create(req: Request, res: Response, next: NextFunction) {
+		try {
+			const reserveRequestDto = ReserveController.getReserveRequestModel(req.body);
+			let user = await ReserveController.getUser(reserveRequestDto.attributes.userId);
+
+			if (!user) {
+				const timeStampInit = Date.now();
+				user = await ReserveController.saveUser(reserveRequestDto);
+
+				const reserveProcessDto = await ReserveService.createReserve(reserveRequestDto);
+				const reserve = await ReserveController.saveReserve(user, reserveProcessDto, timeStampInit, reserveRequestDto);
+
+				res.status(200).json(reserve);
+			} else {
+				throw new RequestError('This user is already registered to vaccinate', 400);
+			}
+		} catch (e) {
+			next(e);
+		}
 	}
 }
 

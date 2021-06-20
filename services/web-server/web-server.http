@@ -53,7 +53,7 @@ Content-Type: application/json
   "amountOfVaccines": 2,
   "selectionCriteria": {
     "age": {
-      "from": 48,
+      "from": 40,
       "to": 46
     }
   }

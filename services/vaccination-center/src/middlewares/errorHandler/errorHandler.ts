@@ -9,9 +9,9 @@ export default async (err: Error, req: Request, res: Response, next: NextFunctio
 	switch (true) {
 		case err instanceof Error.ValidationError:
 			status = 400;
-			const errors = (err as Error.ValidationError).errors
-			const key = Object.keys(errors)[0]
-			message = errors[key].message
+			const errors = (err as Error.ValidationError).errors;
+			const key = Object.keys(errors)[0];
+			message = errors[key].message;
 			break;
 		case err instanceof RequestError:
 			status = (err as RequestError).status;

@@ -2,13 +2,15 @@ type ReserveRequestModelAttributes = {
 	department: number,
 	departmentZone: number,
 	turn: number,
-	reserveDate: Date
+	reserveDate: Date,
+	userId: string,
+	phone: string
 }
 
-export class ReserveRequestModel {
+export class ReserveRequestDto {
 	attributes: ReserveRequestModelAttributes;
 
-	constructor(attributes: ReserveRequestModelAttributes){
+	constructor(attributes: ReserveRequestModelAttributes) {
 		this.attributes = attributes;
 	}
 }

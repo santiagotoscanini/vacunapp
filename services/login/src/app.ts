@@ -41,7 +41,7 @@ export class App {
 		this.app.use('/login', LoginRoutes);
 	}
 
-	postMiddlewares(){
+	postMiddlewares() {
 		this.app.use(errorHandler);
 	}
 

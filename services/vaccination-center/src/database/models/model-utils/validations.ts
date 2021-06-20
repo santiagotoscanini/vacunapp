@@ -4,7 +4,7 @@ export default {
 	fromDefaultAge: 18,
 	toDefaultAge: 106,
 	fromGreaterThanToErrorMessage: 'The Age from cannot be greater than age to.',
-	minAmountOfVaccines: [1, 'Amount of vaccines cannot be less than 1.'],
+	minAmountOfVaccines: [0, 'Amount of vaccines cannot be less than 0.'],
 	minDepartmentId: [1, 'Minimum Departament id supported is 1.'],
 	maxDepartmentId: [19, 'Maximum Departament id supported is 19.'],
 	minDepartmentZone: [1, 'Minimum Departament zone supported is 1.'],

@@ -49,7 +49,7 @@ export class App {
 	}
 
 	postMiddlewares() {
-		this.app.use(errorHandler)
+		this.app.use(errorHandler);
 	}
 
 	async listen() {

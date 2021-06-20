@@ -1,5 +1,5 @@
 config:
-  target: "http://localhost:"{{ $processEnvironment.WEB_SERVER_PORT }}"/api/registrate"
+  target: "http://localhost:"{ { $processEnvironment.WEB_SERVER_PORT } }"/api/registrate"
   phases:
     - duration: 60
       arrivalRate: 5 # per second

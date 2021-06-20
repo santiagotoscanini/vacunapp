@@ -18,11 +18,9 @@ class VaccinationCenter {
 	public departmentZone?: number;
 }
 
-
 const VaccinationCenterModel = getModelForClass(VaccinationCenter);
 
 export {
 	VaccinationCenter,
 	VaccinationCenterModel
 };
-

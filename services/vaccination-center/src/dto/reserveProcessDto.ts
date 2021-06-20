@@ -4,13 +4,14 @@ import { Ref } from '@typegoose/typegoose';
 type ReserveProcessModelAttributes = {
 	vaccinationCenterId?: Ref<VaccinationCenter>,
 	vaccinationDay?: Date,
-	statusMessage?: string
+	statusMessage: string,
+	success: boolean
 }
 
-export class ReserveProcessModel {
+export class ReserveProcessDto {
 	attributes: ReserveProcessModelAttributes;
 
-	constructor(attributes: ReserveProcessModelAttributes){
+	constructor(attributes: ReserveProcessModelAttributes) {
 		this.attributes = attributes;
 	}
 }
