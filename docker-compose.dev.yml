@@ -92,6 +92,8 @@ services:
       DB_PASSWORD: "$DB_MONGO_PASSWORD"
       DB_SCHEMA: "$DB_MONGO_SCHEMA"
       DB_HOST: "mongo"
+      SMS_MOCK_HOST: "sms-provider-service-mock"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
       NODE_ENV: "development"
     depends_on:
       - mongo
