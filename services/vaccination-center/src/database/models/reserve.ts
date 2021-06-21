@@ -31,7 +31,7 @@ class Reserve {
 	public userId?: Ref<User>
 
 	@prop({ type: Number, required: true, min: 1, max: 19 })
-	public department?: number
+	public departmentId?: number
 
 	@prop({ type: Number, required: true, min: 1, max: 50 })
 	public departmentZone?: number
@@ -48,7 +48,7 @@ class Reserve {
 	@prop({ ref: 'VaccinationCenter' })
 	public vaccinationCenterId?: Ref<VaccinationCenter>
 
-	@prop({ type: String })
+	@prop({ type: String, required: true })
 	public statusMessage?: string
 
 	@prop({ type: Date, required: true })
@@ -64,11 +64,32 @@ class Reserve {
 			return 0
 		}
 	}
+
+	public get toJson() {
+		let reserve: any = {
+			code: this.code,
+			// @ts-ignore
+			userId: this.userId.id,
+			timeStampInit: this.timeStampInit,
+			timeStampFinish: this.timeStampFinish,
+			processTime: this.processTime
+		}
+		if (this.isProcessed) {
+			reserve = {
+				vaccinationDay: this.vaccinationDay,
+				// @ts-ignore
+				vaccinationCenterId: this.vaccinationCenterId.id,
+				...reserve
+			}
+		}
+		return reserve
+	}
 }
 
 const ReserveModel = getModelForClass(Reserve)
 
 export {
 	Reserve,
-	ReserveModel
+	ReserveModel,
+	generateReserveCode
 }

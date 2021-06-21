@@ -1,5 +1,5 @@
 type ReserveRequestModelAttributes = {
-	department: number,
+	departmentId: number,
 	departmentZone: number,
 	turn: number,
 	reserveDate: Date,

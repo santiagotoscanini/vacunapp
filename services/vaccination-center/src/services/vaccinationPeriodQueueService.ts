@@ -5,7 +5,7 @@ import ReserveService from './reserveService'
 class VaccinationPeriodQueueService {
 	public static async processVaccinationPeriod(vaccinationPeriod: VaccinationPeriod) {
 		await ReserveModel.find({
-			department: vaccinationPeriod.departmentId,
+			departmentId: vaccinationPeriod.departmentId,
 			departmentZone: vaccinationPeriod.departmentZone,
 			vaccinationDay: {
 				$gte: vaccinationPeriod.dateFrom,
@@ -18,7 +18,7 @@ class VaccinationPeriodQueueService {
 				if (!reserve.isProcessed) {
 					reserve.isProcessed = true
 					reserve.vaccinationCenterId = vaccinationPeriod?.vaccinationCenterId
-					reserve.statusMessage = 'Reserve made successfully'
+					reserve.statusMessage = 'Reserva registrada con exito'
 					await reserve.save()
 
 					await ReserveService.removeVaccineFromPeriod(vaccinationPeriod)

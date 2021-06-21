@@ -12,7 +12,7 @@ export class SmsMessageAdapter implements MessageAdapter {
 		Cédula de Identidad: ${smsDto.attributes.identifier}
 		
 		Información de reserva:
-		* Departamento: ${smsDto.attributes.department}
+		* Departamento: ${smsDto.attributes.departmentId}
 		* Zona:${smsDto.attributes.identifier}
 		* Código de vacunatorio: ${smsDto.attributes.vaccinationCenterCode}
 		* Fecha: ${smsDto.attributes.date}

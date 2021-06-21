@@ -6,17 +6,8 @@ import { RequestError } from '../middlewares/errorHandler/RequestError'
 
 class ReserveService {
 	public static async deleteReserve(userId: string, reserveId: string) {
-		const reserve = await this.getReserve(reserveId)
-		if (reserve) {
-			// @ts-ignore
-			if (reserve.userId.id == userId) {
-				await this.deleteReserveUpdatePeriod(reserve)
-			} else {
-				throw new RequestError(`Reserva ${reserveId} para la Cédula de Identidad ${userId} no existe`, 400)
-			}
-		} else {
-			throw new RequestError(`Reserva ${reserveId} para la Cédula de Identidad ${userId} no existe`, 400)
-		}
+		const reserve = await this.getReserve(reserveId, userId)
+		await this.deleteReserveUpdatePeriod(reserve)
 	}
 
 	public static async createReserve(reserveRequestDto: ReserveRequestDto) {
@@ -44,19 +35,24 @@ class ReserveService {
 		await this.updateVaccinationPeriod(vaccinationPeriod, (vaccinationPeriod.amountOfVaccines ?? 0) + 1)
 	}
 
+	public static async getReserve(reserveId: string, userId: string) {
+		const reserve = await ReserveModel.findOne({ code: reserveId })
+			.populate('userId')
+			.populate('vaccinationCenterId')
+			.exec()
+		// @ts-ignore
+		if (reserve == undefined || reserve.userId.id != userId) {
+			throw new RequestError(`Reserva ${reserveId} para la Cédula de Identidad ${userId} no existe`, 400)
+		}
+		return reserve
+	}
+
 	private static async deleteReserveUpdatePeriod(reserve: Reserve) {
 		if (reserve.isProcessed) {
 			// @ts-ignore
 			await ReserveService.addVaccineFromPeriod(reserve.vaccinationPeriodId)
 		}
 		await ReserveModel.deleteOne({ code: reserve.code })
-	}
-
-	private static async getReserve(reserveId: string) {
-		return await ReserveModel.findOne({ code: reserveId })
-			.populate('userId')
-			.populate('vaccinationCenterId')
-			.exec()
 	}
 
 	private static async updateVaccinationPeriod(vaccinationPeriod: VaccinationPeriod, amount: number) {
@@ -68,7 +64,7 @@ class ReserveService {
 
 	private static async processReserveWithNoAvailablePeriod() {
 		return new ReserveProcessDto({
-			statusMessage: 'Reserve is saved a SMS will be sent with the details for the vaccination',
+			statusMessage: 'Reserva procesada correctamente, se enviara un SMS con los detalles',
 			success: false
 		})
 	}
@@ -81,7 +77,7 @@ class ReserveService {
 			vaccinationCenterId: vaccinationPeriod.vaccinationCenterId,
 			vaccinationPeriodId: vaccinationPeriod,
 			vaccinationDay: requestModel.attributes.reserveDate,
-			statusMessage: 'Reserve made successfully',
+			statusMessage: 'Reserva procesada correctamente',
 			success: true
 		})
 	}
@@ -97,7 +93,7 @@ class ReserveService {
 	private static filterVaccinationPeriods(requestModel: ReserveRequestDto) {
 		return {
 			departmentZone: requestModel.attributes.departmentZone,
-			departmentId: requestModel.attributes.department,
+			departmentId: requestModel.attributes.departmentId,
 			amountOfVaccines: {
 				$gt: 0
 			},

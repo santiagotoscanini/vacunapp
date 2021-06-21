@@ -33,11 +33,11 @@ class VaccinationPeriodController {
 
 			// Invalid cases.
 			if (Object.keys(selectionCriteria).length !== 1) {
-				throw new RequestError('Exactly one selection criteria has to be sent.', 400)
+				throw new RequestError('Solamente se permite un criterio de seleccion.', 400)
 			}
 			let vaccinationCenterDocument = await VaccinationCenterModel.findOne({ id: vaccinationCenterId })
 			if (!vaccinationCenterDocument) {
-				throw new RequestError('The vaccination center doesn\'t exist.', 400)
+				throw new RequestError('El vacunatorio no existe.', 400)
 			}
 
 			const selectionCriteriaType: string = Object.keys(selectionCriteria)[0]

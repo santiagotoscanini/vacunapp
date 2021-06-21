@@ -17,7 +17,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "department": 2,
+  "departmentId": 2,
   "departmentZone": 12,
   "id": "antel_arena",
   "name": "Antel Arena",

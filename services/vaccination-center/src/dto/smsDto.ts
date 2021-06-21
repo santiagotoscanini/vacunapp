@@ -2,7 +2,7 @@ type SmsModelAttributes = {
 	cellphone: string
 	reserveCode: number
 	identifier: number
-	department: string
+	departmentId: string
 	vaccinationCenterCode: string
 	date: string
 	initTimeStamp: string

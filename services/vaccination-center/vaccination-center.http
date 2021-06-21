@@ -54,14 +54,14 @@ POST localhost:{{vaccination-centers-port}}/reserves
 Content-Type: application/json
 
 {
-  "userId": 14111234,
+  "userId": 11211313,
   "phone": "098381948",
   "reserveDate": {
     "day": 4,
     "month": 2,
     "year": 2020
   },
-  "department": 1,
+  "departmentId": 1,
   "departmentZone": 4,
   "turn": 3
 }
@@ -80,5 +80,15 @@ Content-Type: application/json
 {
   "userId": 14111234,
   "reserveId": "rNOEsWfDw3"
+}
+
+### Get reserve
+
+GET localhost:{{vaccination-centers-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": 11211313,
+  "reserveId": "49PGHHP2sp"
 }
 

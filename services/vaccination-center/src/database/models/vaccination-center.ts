@@ -12,7 +12,7 @@ class VaccinationCenter {
 	public workingTime?: number
 
 	@prop({ type: Number, required: true, min: validations.minDepartmentId, max: validations.maxDepartmentId })
-	public department?: number
+	public departmentId?: number
 
 	@prop({ type: Number, required: true, min: validations.minDepartmentZone, max: validations.maxDepartmentZone })
 	public departmentZone?: number

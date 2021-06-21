@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { User, UserModel } from '../database/models/user'
-import { ReserveModel } from '../database/models/reserve'
+import { Reserve, ReserveModel } from '../database/models/reserve'
 import ReserveService from '../services/reserveService'
 import { ReserveProcessDto } from '../dto/reserveProcessDto'
 import { ReserveRequestDto } from '../dto/reserveRequestDto'
@@ -22,12 +22,12 @@ class ReserveController {
 	}
 
 	private static getReserveRequestModel(body: { [index: string]: any }) {
-		const { userId, phone, reserveDate, department, departmentZone, turn } = body
+		const { userId, phone, reserveDate, departmentId, departmentZone, turn } = body
 
 		return new ReserveRequestDto({
 			// Month minus one, mongoose issue https://stackoverflow.com/questions/37388552/mongoose-increment-the-date-field-of-a-mongo-collection-by-one-month
 			reserveDate: new Date(reserveDate['year'], reserveDate['month'] - 1, reserveDate['day']),
-			department: department,
+			departmentId: departmentId,
 			departmentZone: departmentZone,
 			turn: turn,
 			userId: userId,
@@ -44,7 +44,7 @@ class ReserveController {
 		const timeStampFinish = Date.now()
 		const reserve = new ReserveModel({
 			userId: user,
-			department: reserveRequestDto.attributes.department,
+			departmentId: reserveRequestDto.attributes.departmentId,
 			departmentZone: reserveRequestDto.attributes.departmentZone,
 			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
 			vaccinationPeriodId: reserveProcessDto.attributes.vaccinationPeriodId,
@@ -62,15 +62,15 @@ class ReserveController {
 			const reserveRequestDto = ReserveController.getReserveRequestModel(req.body)
 			let user = await ReserveController.getUser(reserveRequestDto.attributes.userId)
 
-			if (user) throw new RequestError('This user is already registered to vaccinate', 400)
+			if (user) throw new RequestError(`Ya existe una reserva para el usuario:${user.id}`, 400)
 
 			const timeStampInit = Date.now()
 			user = await ReserveController.saveUser(reserveRequestDto)
 
 			const reserveProcessDto = await ReserveService.createReserve(reserveRequestDto)
-			const reserve = await ReserveController.saveReserve(user, reserveProcessDto, timeStampInit, reserveRequestDto)
+			const reserve: Reserve = await ReserveController.saveReserve(user, reserveProcessDto, timeStampInit, reserveRequestDto)
 
-			res.status(200).json(reserve)
+			res.status(200).json(reserve.toJson)
 		} catch (e) {
 			next(e)
 		}
@@ -80,7 +80,17 @@ class ReserveController {
 		try {
 			const { userId, reserveId } = req.body
 			await ReserveService.deleteReserve(userId, reserveId)
-			res.status(200).json(`“Reserva ${reserveId} para la Cédula de Identidad ${userId} ha sido cancelada`)
+			res.status(200).json(`Reserva ${reserveId} para la Cédula de Identidad ${userId} ha sido cancelada`)
+		} catch (e) {
+			next(e)
+		}
+	}
+
+	public async read(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { userId, reserveId } = req.body
+			const reserve = await ReserveService.getReserve(reserveId, userId)
+			res.status(200).json(reserve.toJson)
 		} catch (e) {
 			next(e)
 		}

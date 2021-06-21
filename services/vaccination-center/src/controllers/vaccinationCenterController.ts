@@ -5,16 +5,16 @@ import { RequestError } from '../middlewares/errorHandler/RequestError'
 class VaccinationCenterController {
 	public async create(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { id, name, workingTime, department, departmentZone } = req.body
+			const { id, name, workingTime, departmentId, departmentZone } = req.body
 
 			let vaccinationCenter = await VaccinationCenterModel.findOne({ id: id })
 
-			if (vaccinationCenter) throw new RequestError('This vaccination center ID is being used', 400)
+			if (vaccinationCenter) throw new RequestError(`Ya existe un vacunatorio para el id:${id}`, 400)
 			vaccinationCenter = new VaccinationCenterModel({
 				id: id,
 				name: name,
 				workingTime: workingTime,
-				department: department,
+				departmentId: departmentId,
 				departmentZone: departmentZone
 			})
 
