@@ -21,7 +21,7 @@ class VaccinationPeriodQueueService {
 					reserve.statusMessage = 'Reserve made successfully'
 					await reserve.save()
 
-					await ReserveService.updateVaccinationPeriod(vaccinationPeriod)
+					await ReserveService.removeVaccineFromPeriod(vaccinationPeriod)
 				}
 			})
 	}

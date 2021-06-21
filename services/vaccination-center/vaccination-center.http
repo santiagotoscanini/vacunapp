@@ -54,7 +54,7 @@ POST localhost:{{vaccination-centers-port}}/reserves
 Content-Type: application/json
 
 {
-  "userId": 11111111,
+  "userId": 14111234,
   "phone": "098381948",
   "reserveDate": {
     "day": 4,
@@ -65,3 +65,20 @@ Content-Type: application/json
   "departmentZone": 4,
   "turn": 3
 }
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Delete reserve
+
+DELETE localhost:{{vaccination-centers-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": 14111234,
+  "reserveId": "rNOEsWfDw3"
+}
+

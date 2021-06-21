@@ -47,6 +47,7 @@ class ReserveController {
 			department: reserveRequestDto.attributes.department,
 			departmentZone: reserveRequestDto.attributes.departmentZone,
 			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
+			vaccinationPeriodId: reserveProcessDto.attributes.vaccinationPeriodId,
 			vaccinationDay: reserveProcessDto.attributes.vaccinationDay ?? reserveRequestDto.attributes.reserveDate,
 			statusMessage: reserveProcessDto.attributes.statusMessage,
 			timeStampFinish: timeStampFinish,
@@ -70,6 +71,16 @@ class ReserveController {
 			const reserve = await ReserveController.saveReserve(user, reserveProcessDto, timeStampInit, reserveRequestDto)
 
 			res.status(200).json(reserve)
+		} catch (e) {
+			next(e)
+		}
+	}
+
+	public async delete(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { userId, reserveId } = req.body
+			await ReserveService.deleteReserve(userId, reserveId)
+			res.status(200).json(`“Reserva ${reserveId} para la Cédula de Identidad ${userId} ha sido cancelada`)
 		} catch (e) {
 			next(e)
 		}

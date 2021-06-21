@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, pre, prop, Ref } from '@typegoose/typegoose'
 import { VaccinationCenter } from './vaccination-center'
 import { User } from './user'
+import { VaccinationPeriod } from './vaccination-period'
 
 const Crypto = require('crypto')
 
@@ -40,6 +41,9 @@ class Reserve {
 
 	@prop({ type: Boolean, required: true })
 	public isProcessed?: boolean
+
+	@prop({ ref: 'VaccinationPeriod' })
+	public vaccinationPeriodId?: Ref<VaccinationPeriod>
 
 	@prop({ ref: 'VaccinationCenter' })
 	public vaccinationCenterId?: Ref<VaccinationCenter>
