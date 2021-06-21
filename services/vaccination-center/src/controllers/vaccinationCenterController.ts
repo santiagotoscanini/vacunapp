@@ -9,7 +9,7 @@ class VaccinationCenterController {
 
 			let vaccinationCenter = await VaccinationCenterModel.findOne({ id: id })
 
-			if (!vaccinationCenter) throw new RequestError('This vaccination center ID is being used', 400)
+			if (vaccinationCenter) throw new RequestError('This vaccination center ID is being used', 400)
 			vaccinationCenter = new VaccinationCenterModel({
 				id: id,
 				name: name,
