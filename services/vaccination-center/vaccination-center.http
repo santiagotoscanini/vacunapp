@@ -3,7 +3,7 @@ POST localhost:{{vaccination-centers-port}}/vaccination-centers
 Content-Type: application/json
 
 {
-  "department": 2,
+  "departmentId": 2,
   "departmentZone": 12,
   "id": "antel_arena",
   "name": "Antel Arena",
@@ -47,48 +47,3 @@ client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
 });
 %}
-
-### Create Valid reserve
-
-POST localhost:{{vaccination-centers-port}}/reserves
-Content-Type: application/json
-
-{
-  "userId": 11211313,
-  "phone": "098381948",
-  "reserveDate": {
-    "day": 4,
-    "month": 2,
-    "year": 2020
-  },
-  "departmentId": 1,
-  "departmentZone": 4,
-  "turn": 3
-}
-
-> {%
-client.test("Request executed successfully", function() {
-  client.assert(response.status === 200, "Response status is not 200");
-});
-%}
-
-### Delete reserve
-
-DELETE localhost:{{vaccination-centers-port}}/reserves
-Content-Type: application/json
-
-{
-  "userId": 14111234,
-  "reserveId": "rNOEsWfDw3"
-}
-
-### Get reserve
-
-GET localhost:{{vaccination-centers-port}}/reserves
-Content-Type: application/json
-
-{
-  "userId": 11211313,
-  "reserveId": "49PGHHP2sp"
-}
-

@@ -10,7 +10,7 @@ class SeedMongoDb {
 		// ObjectId Format https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm
 		const vaccinationCenterId = new Types.ObjectId('5349b4ddd2781d08c09890f3')
 
-		VaccinationCenterModel.exists({ '_id': vaccinationCenterId }).then(exists => {
+		VaccinationCenterModel.exists({ '_id': vaccinationCenterId }).then(async exists => {
 				console.log('Seeding...')
 				if (!exists) {
 					console.log('Seed not detected, inserting data...')
@@ -27,9 +27,13 @@ class SeedMongoDb {
 						new Types.ObjectId('5349b4ddd2781d08c09890f6'),
 						new Types.ObjectId('5349b4ddd2781d08c09890f7')
 					]
-					SeedMongoDb.createSelectionCriteria(selectionCriteriaIds)
-					SeedMongoDb.createVaccinationPeriod(vaccinationCenterId, selectionCriteriaIds, vaccinationPeriodIds)
-					SeedMongoDb.createReserves(vaccinationCenterId, userIds, vaccinationPeriodIds)
+					const reserveIds = [
+						new Types.ObjectId('5349b4ddd2781d08c09890f8'),
+						new Types.ObjectId('5349b4ddd2781d08c09890f9')
+					]
+					await SeedMongoDb.createSelectionCriteria(selectionCriteriaIds)
+					await SeedMongoDb.createVaccinationPeriod(vaccinationCenterId, selectionCriteriaIds, vaccinationPeriodIds)
+					await SeedMongoDb.createReserves(vaccinationCenterId, userIds, vaccinationPeriodIds, reserveIds)
 				} else {
 					console.log('Seed already detected...')
 				}
@@ -95,7 +99,7 @@ class SeedMongoDb {
 		}])
 	}
 
-	private static async createReserves(vaccinationCenterId: any, userIds: any, vaccinationPeriodIds: any) {
+	private static async createReserves(vaccinationCenterId: any, userIds: any, vaccinationPeriodIds: any, reserveIds: any) {
 		await UserModel.insertMany([
 			{
 				'__v': 0,
@@ -112,6 +116,7 @@ class SeedMongoDb {
 		])
 		await ReserveModel.insertMany([{
 			'__v': 0,
+			'_id': reserveIds[0],
 			'code': generateReserveCode(),
 			'userId': userIds[0],
 			'departmentZone': 12,
@@ -125,6 +130,7 @@ class SeedMongoDb {
 			'timeStampFinish': Date.now()
 		}, {
 			'__v': 0,
+			'_id': reserveIds[1],
 			'code': generateReserveCode(),
 			'userId': userIds[1],
 			'departmentZone': 12,

@@ -1,0 +1,44 @@
+### Create Valid reserve
+
+POST localhost:{{reserve-service-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": "10000058",
+  "phone": "098319481",
+  "reserveDate": {
+    "day": 4,
+    "month": 2,
+    "year": 2022
+  },
+  "departmentId": 1,
+  "departmentZone": 12,
+  "turn": 3
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Delete reserve
+
+DELETE localhost:{{reserve-service-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": 10000014,
+  "reserveId": "18fe738916"
+}
+
+### Get reserve
+
+GET localhost:{{reserve-service-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": 10000014,
+  "reserveId": "18fe738916"
+}
+

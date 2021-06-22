@@ -1,7 +1,8 @@
-import { getModelForClass, modelOptions, pre, prop, Ref } from '@typegoose/typegoose'
+import { getModelForClass, pre, prop, Ref } from '@typegoose/typegoose'
 import { VaccinationCenter } from './vaccination-center'
 import { User } from './user'
 import { VaccinationPeriod } from './vaccination-period'
+import validations from './model-utils/validations'
 
 const Crypto = require('crypto')
 
@@ -10,19 +11,14 @@ function generateReserveCode(): string {
 
 	return Crypto
 		.randomBytes(length)
-		.toString('base64')
+		.toString('hex')
 		.slice(0, length)
 }
 
 @pre<Reserve>('save', function() {
 	this.code = generateReserveCode()
 })
-@modelOptions({
-	schemaOptions: {
-		toJSON: { virtuals: true },
-		toObject: { virtuals: true }
-	}
-})
+
 class Reserve {
 	@prop({ type: String, unique: true })
 	public code?: string
@@ -30,13 +26,19 @@ class Reserve {
 	@prop({ ref: 'User', required: true })
 	public userId?: Ref<User>
 
-	@prop({ type: Number, required: true, min: 1, max: 19 })
+	@prop({ type: Number, required: true, min: validations.minDepartmentId, max: validations.maxDepartmentId })
 	public departmentId?: number
 
-	@prop({ type: Number, required: true, min: 1, max: 50 })
+	@prop({
+		type: Number,
+		required: true,
+		min: validations.minDepartmentZone,
+		max: validations.maxDepartmentZone,
+		validate: validations.validateDepartmentZoneVaccinationCenterExist
+	})
 	public departmentZone?: number
 
-	@prop({ type: Date, required: true })
+	@prop({ type: Date, required: true, validate: validations.validateReserveDate })
 	public vaccinationDay?: Date
 
 	@prop({ type: Boolean, required: true })

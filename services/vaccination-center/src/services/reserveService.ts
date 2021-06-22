@@ -3,6 +3,7 @@ import { ReserveRequestDto } from '../dto/reserveRequestDto'
 import { ReserveProcessDto } from '../dto/reserveProcessDto'
 import { Reserve, ReserveModel } from '../database/models/reserve'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
+import { User } from '../database/models/user'
 
 class ReserveService {
 	public static async deleteReserve(userId: string, reserveId: string) {
@@ -10,7 +11,30 @@ class ReserveService {
 		await this.deleteReserveUpdatePeriod(reserve)
 	}
 
-	public static async createReserve(reserveRequestDto: ReserveRequestDto) {
+	public static async createReserve(
+		user: User,
+		reserveProcessDto: ReserveProcessDto,
+		timeStampInit: number,
+		reserveRequestDto: ReserveRequestDto
+	) {
+		const timeStampFinish = Date.now()
+		const reserve = new ReserveModel({
+			userId: user,
+			departmentId: reserveRequestDto.attributes.departmentId,
+			departmentZone: reserveRequestDto.attributes.departmentZone,
+			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
+			vaccinationPeriodId: reserveProcessDto.attributes.vaccinationPeriodId,
+			vaccinationDay: reserveRequestDto.attributes.reserveDate,
+			statusMessage: reserveProcessDto.attributes.statusMessage,
+			timeStampFinish: timeStampFinish,
+			timeStampInit: timeStampInit,
+			isProcessed: reserveProcessDto.attributes.success
+		})
+		await reserve.validate()
+		return reserve
+	}
+
+	public static async processReserve(reserveRequestDto: ReserveRequestDto) {
 		const vaccinationPeriods = await VaccinationPeriodModel
 			.find(this.filterVaccinationPeriods(reserveRequestDto)).populate('vaccinationCenterId').exec()
 		let vaccinationPeriod = this.filterVaccinationPeriodsWithTurn(reserveRequestDto, vaccinationPeriods)
@@ -19,7 +43,6 @@ class ReserveService {
 			return await this.processVaccinationCenter(vaccinationPeriod, reserveRequestDto)
 		} else {
 			if (vaccinationPeriods.length > 0) {
-
 				return await this.processVaccinationCenter(vaccinationPeriods[0], reserveRequestDto)
 			} else {
 				return await this.processReserveWithNoAvailablePeriod()

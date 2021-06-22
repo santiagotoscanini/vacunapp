@@ -1,3 +1,5 @@
+import { UserDto } from '../../dto/userDto'
+
 export interface IdentificationAdapter {
-	getInformation(identifier: number): Promise<any>
+	getInformation(identifier: string): Promise<UserDto>
 }
