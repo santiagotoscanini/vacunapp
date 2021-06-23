@@ -49,7 +49,7 @@ class ReserveController {
 
 			const timeStampInit = Date.now()
 			user = await UserService.createUser(reserveRequestDto)
-			const reserveProcessDto = await ReserveService.processReserve(reserveRequestDto)
+			const reserveProcessDto = await ReserveService.processReserve(reserveRequestDto, user)
 			const reserve = await ReserveService.createReserve(user, reserveProcessDto, timeStampInit, reserveRequestDto)
 
 			await user.save()

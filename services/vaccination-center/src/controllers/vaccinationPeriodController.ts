@@ -4,7 +4,7 @@ import { VaccinationPeriodModel } from '../database/models/vaccination-period'
 import { VaccinationCenterModel } from '../database/models/vaccination-center'
 import SelectionCriteriaImporter from '../database/selectionCriteriaImporter'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
-import VaccinationPeriodQueueService from '../services/vaccinationPeriodQueueService'
+import VaccinationPeriodQueueService from '../services/queue/vaccinationPeriodQueueService'
 
 class VaccinationPeriodController {
 	private static getBodyToSaveSelectionCriteria(selectionCriteriaType: string, selectionCriteria: { [index: string]: any }) {

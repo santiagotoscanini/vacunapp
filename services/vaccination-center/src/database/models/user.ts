@@ -1,5 +1,6 @@
 import { getModelForClass, prop } from '@typegoose/typegoose'
 import validations from './model-utils/validations'
+import moment from 'moment'
 
 class User {
 	@prop({ type: String, required: true, unique: true, validate: validations.validateIdentificationNumber })
@@ -22,6 +23,11 @@ class User {
 
 	@prop({ type: String, required: true, validate: validations.validatePhone })
 	public phone?: string
+
+	public get age() {
+		const dateOfBirth = moment(this.dateOfBirth)
+		return moment().diff(dateOfBirth, 'years', false)
+	}
 }
 
 const UserModel = getModelForClass(User)

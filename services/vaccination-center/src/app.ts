@@ -5,6 +5,7 @@ import fs from 'fs'
 
 import VaccinationCentersRoutes from './routes/vaccination-center.routes'
 import VaccinationPeriodsRoutes from './routes/vaccination-period.routes'
+import ReserveQueueRoutes from './routes/reserve-queue.routes'
 import ReserveRoutes from './routes/reserve.routes'
 import errorHandler from './middlewares/errorHandler/errorHandler'
 
@@ -46,6 +47,7 @@ export class App {
 		this.app.use('/vaccination-centers', VaccinationCentersRoutes)
 		this.app.use('/vaccination-periods', VaccinationPeriodsRoutes)
 		this.app.use('/reserves', ReserveRoutes)
+		this.app.use('/reserves-queue', ReserveQueueRoutes)
 	}
 
 	postMiddlewares() {

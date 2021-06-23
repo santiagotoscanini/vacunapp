@@ -80,8 +80,8 @@ class SeedMongoDb {
 			'__v': 0,
 			'_id': vaccinationPeriodIds[0],
 			'amountOfVaccines': 2,
-			'dateFrom': new Date(2021, 3, 3),
-			'dateTo': new Date(2021, 3, 1),
+			'dateFrom': new Date(2022, 3, 3),
+			'dateTo': new Date(2022, 3, 1),
 			'departmentZone': 12,
 			'departmentId': 3,
 			'selectionCriteriaId': selectionCriteriaIds[0],
@@ -90,8 +90,8 @@ class SeedMongoDb {
 			'__v': 0,
 			'_id': vaccinationPeriodIds[1],
 			'amountOfVaccines': 3,
-			'dateFrom': new Date(2021, 3, 3),
-			'dateTo': new Date(2021, 12, 1),
+			'dateFrom': new Date(202, 3, 3),
+			'dateTo': new Date(2022, 12, 1),
 			'departmentZone': 12,
 			'departmentId': 3,
 			'selectionCriteriaId': selectionCriteriaIds[1],
@@ -104,14 +104,23 @@ class SeedMongoDb {
 			{
 				'__v': 0,
 				'_id': userIds[0],
-				'id': 55569291,
-				'phone': '098567345'
-			},
-			{
+				'id': '10000105',
+				'phone': '098519534',
+				'name': 'Cathlene',
+				'surname': 'Rushmare',
+				'secondSurname': 'Hastelow',
+				'dateOfBirth': '11/24/1996',
+				'priority': 4
+			}, {
 				'__v': 0,
 				'_id': userIds[1],
-				'id': 55138691,
-				'phone': '098903345'
+				'id': '10000246',
+				'phone': '098419534',
+				'name': 'Farica',
+				'surname': 'Gilhoolie',
+				'secondSurname': 'Perryman',
+				'dateOfBirth': '01/15/1988',
+				'priority': 4
 			}
 		])
 		await ReserveModel.insertMany([{
@@ -121,13 +130,15 @@ class SeedMongoDb {
 			'userId': userIds[0],
 			'departmentZone': 12,
 			'departmentId': 3,
-			'vaccinationDay': new Date(2021, 3, 27),
+			'vaccinationDay': new Date(2022, 3, 27),
 			'isProcessed': true,
 			'vaccinationPeriodId': vaccinationPeriodIds[0],
 			'vaccinationCenterId': vaccinationCenterId[0],
 			'statusMessage': 'Reserva procesada correctamente',
 			'timeStampInit': Date.now(),
-			'timeStampFinish': Date.now()
+			'timeStampFinish': Date.now(),
+			'userPriority': 4,
+			'userDateOfBirth': '11/24/1996'
 		}, {
 			'__v': 0,
 			'_id': reserveIds[1],
@@ -135,13 +146,15 @@ class SeedMongoDb {
 			'userId': userIds[1],
 			'departmentZone': 12,
 			'departmentId': 3,
-			'vaccinationDay': new Date(2021, 3, 27),
+			'vaccinationDay': new Date(2022, 3, 27),
 			'isProcessed': true,
 			'vaccinationPeriodId': vaccinationPeriodIds[0],
 			'vaccinationCenterId': vaccinationCenterId[0],
 			'statusMessage': 'Reserva procesada correctamente',
 			'timeStampInit': Date.now(),
-			'timeStampFinish': Date.now()
+			'timeStampFinish': Date.now(),
+			'userPriority': 4,
+			'userDateOfBirth': '01/15/1988'
 		}])
 	}
 }

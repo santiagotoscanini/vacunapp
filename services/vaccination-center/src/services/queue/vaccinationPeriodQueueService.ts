@@ -1,6 +1,7 @@
-import { VaccinationPeriod } from '../database/models/vaccination-period'
-import { ReserveModel } from '../database/models/reserve'
-import ReserveService from './reserveService'
+import { ReserveModel } from '../../database/models/reserve'
+import { VaccinationPeriod } from '../../database/models/vaccination-period'
+import ReserveService from '../reserveService'
+import reserveSorting from '../queue/reserveSorting'
 
 class VaccinationPeriodQueueService {
 	public static async processVaccinationPeriod(vaccinationPeriod: VaccinationPeriod) {
@@ -12,7 +13,8 @@ class VaccinationPeriodQueueService {
 				$lte: vaccinationPeriod.dateTo
 			},
 			isProcessed: false
-		}).limit(vaccinationPeriod.amountOfVaccines ?? 0)
+		}).sort(reserveSorting.getSortingAlgorithm())
+			.limit(vaccinationPeriod.amountOfVaccines ?? 0)
 			.cursor()
 			.eachAsync(async function(reserve) {
 				if (!reserve.isProcessed) {

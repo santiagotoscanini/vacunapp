@@ -27,17 +27,17 @@ Content-Type: application/json
   "dateFrom": {
     "day": 1,
     "month": 2,
-    "year": 2020
+    "year": 2023
   },
   "dateTo": {
     "day": 1,
     "month": 3,
-    "year": 2020
+    "year": 2023
   },
   "amountOfVaccines": 2,
   "selectionCriteria": {
     "age": {
-      "to": 18
+      "to": 20
     }
   }
 }

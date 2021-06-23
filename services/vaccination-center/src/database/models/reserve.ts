@@ -41,6 +41,12 @@ class Reserve {
 	@prop({ type: Date, required: true, validate: validations.validateReserveDate })
 	public vaccinationDay?: Date
 
+	@prop({ type: Date, required: true })
+	public userDateOfBirth?: Date
+
+	@prop({ type: Number, required: true })
+	public userPriority?: number
+
 	@prop({ type: Boolean, required: true })
 	public isProcessed?: boolean
 

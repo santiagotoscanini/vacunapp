@@ -4,6 +4,7 @@ import { ReserveProcessDto } from '../dto/reserveProcessDto'
 import { Reserve, ReserveModel } from '../database/models/reserve'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
 import { User } from '../database/models/user'
+import { SelectionCriteria } from '../database/models/selection-criteria/selectionCriteria'
 
 class ReserveService {
 	public static async deleteReserve(userId: string, reserveId: string) {
@@ -20,6 +21,8 @@ class ReserveService {
 		const timeStampFinish = Date.now()
 		const reserve = new ReserveModel({
 			userId: user,
+			userPriority: user.priority,
+			userDateOfBirth: user.dateOfBirth,
 			departmentId: reserveRequestDto.attributes.departmentId,
 			departmentZone: reserveRequestDto.attributes.departmentZone,
 			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
@@ -34,9 +37,8 @@ class ReserveService {
 		return reserve
 	}
 
-	public static async processReserve(reserveRequestDto: ReserveRequestDto) {
-		const vaccinationPeriods = await VaccinationPeriodModel
-			.find(this.filterVaccinationPeriods(reserveRequestDto)).populate('vaccinationCenterId').exec()
+	public static async processReserve(reserveRequestDto: ReserveRequestDto, user: User) {
+		const vaccinationPeriods = await this.getVaccinationPeriods(reserveRequestDto, user)
 		let vaccinationPeriod = this.filterVaccinationPeriodsWithTurn(reserveRequestDto, vaccinationPeriods)
 
 		if (vaccinationPeriod) {
@@ -83,6 +85,22 @@ class ReserveService {
 		vaccinationPeriodModel.amountOfVaccines = amount
 		vaccinationPeriod.amountOfVaccines = amount
 		return vaccinationPeriodModel.save()
+	}
+
+	private static async getVaccinationPeriods(reserveRequestDto: ReserveRequestDto, user: User) {
+		const vaccinationPeriods = await VaccinationPeriodModel
+			.find(this.filterVaccinationPeriods(reserveRequestDto))
+			.populate('vaccinationCenterId')
+			.populate('selectionCriteriaId')
+			.exec()
+
+		return vaccinationPeriods.filter((period: VaccinationPeriod) => {
+			if (period?.selectionCriteriaId instanceof SelectionCriteria) {
+				return period?.selectionCriteriaId.validateUser(user)
+			} else {
+				return true
+			}
+		})
 	}
 
 	private static async processReserveWithNoAvailablePeriod() {
