@@ -1,54 +1,32 @@
 config:
-  target: "http://localhost:"{ { $processEnvironment.WEB_SERVER_PORT } }"/api/registrate"
+  target: "http://localhost:3003"
   phases:
     - duration: 60
-      arrivalRate: 5 # per second
-      maxVusers: 50 # no more than 50 concurrent at given time
+      arrivalRate: 1
       name: Warm up
-    - duration: 10
-      arrivalRate: 50
-      rampTo: 40 # increment until reach 40
-    - duration: 60
-      arrivalCount: 20 # fixed 20 in 60 seconds, around one every 3 seconds
-      name: Ramp up load
-    - pause: 60 # no req for 1 minute
-    - duration: 600
-      arrivalRate: 50
-      name: Sustained load
-
-  defaults:
-    - "Auth-Token asdjasdkl;sajd"
-  first:
-    phases:
-      sadas
-    payload:
-      path: "data/{{$enviroment}}Dataset.csv"
-      fields:
-        - "ci"
-        - "cellphone"
-        - "reservationDate"
-        - "schedule"
-        - "state"
-        - "zone"
-
-    second:
-      phases:
-        sadas
-      payload:
-        path: "data/{{$enviroment}}Dataset.csv"
-        fields:
-          - "ci"
-          - "cellphone"
-          - "reservationDate"
-          - "schedule"
-          - "state"
-          - "zone"
+  #    - duration: 60
+  #      arrivalRate: 5
+  #      rampTo: 40
+  payload:
+    path: "data/firstDataset.csv"
+    delimiter: "|"
+    fields:
+      - "DocumentId"
+      - "Cellphone"
+      - "ReservationDate"
+      - "Schedule"
+      - "State"
+      - "Zone"
 
 scenarios:
   - name: "Vaccination reservation."
     flow:
       - post:
-          url: "/reservation"
+          url: "/reserves"
           json:
-            ci: "{{ ci }}"
-            cell: "{{ cellphone }}"
+            userId: "{{ DocumentId }}"
+            phone: "{{ Cellphone }}"
+            reserveDate: "{{ ReservationDate }}"
+            turn: "{{ Schedule }}"
+            departmentId: "{{ State }}"
+            departmentZone: "{{ Zone }}"
