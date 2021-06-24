@@ -2,10 +2,10 @@ import express, { Application, Request, Response } from 'express'
 import morgan from 'morgan'
 import path from 'path'
 import fs from 'fs'
-
+import timeout from 'connect-timeout'
 import VaccinationCentersRoutes from './routes/vaccination-center.routes'
 import VaccinationPeriodsRoutes from './routes/vaccination-period.routes'
-import ReserveQueueRoutes from './routes/reserve-queue.routes'
+import ConfigRoutes from './routes/config.routes'
 import ReserveRoutes from './routes/reserve.routes'
 import errorHandler from './middlewares/errorHandler/errorHandler'
 
@@ -25,6 +25,7 @@ export class App {
 	}
 
 	preMiddlewares() {
+		this.app.use(timeout('5m'))
 		this.loggingMiddleware()
 		this.app.use(express.json())
 	}
@@ -47,7 +48,7 @@ export class App {
 		this.app.use('/vaccination-centers', VaccinationCentersRoutes)
 		this.app.use('/vaccination-periods', VaccinationPeriodsRoutes)
 		this.app.use('/reserves', ReserveRoutes)
-		this.app.use('/reserves-queue', ReserveQueueRoutes)
+		this.app.use('/config', ConfigRoutes)
 	}
 
 	postMiddlewares() {

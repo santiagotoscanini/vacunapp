@@ -12,9 +12,9 @@ class VaccinationRegister {
 	public age?: number
 
 	@prop({ type: Date, required: true })
-	public vaccinationDay?: Date
+	public vaccinationDate?: Date
 
-	@prop({type: Number, required: true, enum: validations.workingTime})
+	@prop({ type: Number, required: true, enum: validations.workingTime })
 	public workingTime?: number
 }
 

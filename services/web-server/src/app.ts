@@ -3,8 +3,11 @@ import morgan from 'morgan'
 import path from 'path'
 import fs from 'fs'
 
-import VaccinationCentersRoutes from './routes/vaccination-center.routes'
-import LoginRoutes from './routes/login.routes'
+import vaccinationCentersRoutes from './routes/vaccination-center.routes'
+import loginRoutes from './routes/login.routes'
+import vaccinationPeriodsRoutes from './routes/vaccination-period.routes'
+import reserveRoutes from './routes/reserve.routes'
+import configRoutes from './routes/config.routes'
 import errorHandler from './middlewares/errorHandler/errorHandler'
 
 export class App {
@@ -46,8 +49,11 @@ export class App {
 	}
 
 	routes() {
-		this.app.use('/vaccination-centers', VaccinationCentersRoutes)
-		this.app.use('/login', LoginRoutes)
+		this.app.use('/vaccination-centers', vaccinationCentersRoutes)
+		this.app.use('/vaccination-periods', vaccinationPeriodsRoutes)
+		this.app.use('/reserves', reserveRoutes)
+		this.app.use('/config', configRoutes)
+		this.app.use('/login', loginRoutes)
 	}
 
 	async listen() {

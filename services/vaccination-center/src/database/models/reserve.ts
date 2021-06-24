@@ -39,7 +39,7 @@ class Reserve {
 	public departmentZone?: number
 
 	@prop({ type: Date, required: true, validate: validations.validateReserveDate })
-	public vaccinationDay?: Date
+	public vaccinationDate?: Date
 
 	@prop({ type: Date, required: true })
 	public userDateOfBirth?: Date
@@ -84,7 +84,7 @@ class Reserve {
 		}
 		if (this.isProcessed) {
 			reserve = {
-				vaccinationDay: this.vaccinationDay,
+				vaccinationDate: this.vaccinationDate,
 				// @ts-ignore
 				vaccinationCenterId: this.vaccinationCenterId.id,
 				...reserve

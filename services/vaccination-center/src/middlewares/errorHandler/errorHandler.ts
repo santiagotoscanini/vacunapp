@@ -5,7 +5,6 @@ import { Error } from 'mongoose'
 export default async (err: Error, req: Request, res: Response, next: NextFunction) => {
 	let message: string
 	let status: number
-
 	switch (true) {
 		case err instanceof Error.ValidationError:
 			status = 400

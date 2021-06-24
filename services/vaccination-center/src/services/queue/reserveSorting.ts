@@ -1,9 +1,9 @@
 import * as fs from 'fs'
 import { RequestError } from '../../middlewares/errorHandler/RequestError'
+import { configIds, ConfigModel } from '../../database/models/config'
 
 class ReserveSorting {
 	public algorithmsDict: { [index: string]: any } = {}
-	private currentSortingAlgorithm: string
 
 	constructor() {
 		fs.readdirSync(`${__dirname}/concreteQueueSorting/`)
@@ -12,19 +12,24 @@ class ReserveSorting {
 				const fileName = file.split('.')[0]
 				this.algorithmsDict[fileName] = require(`./concreteQueueSorting/${file}`).default
 			})
-		this.currentSortingAlgorithm = Object.keys(this.algorithmsDict)[0]
 	}
 
-	public updateSortingAlgorithm(algorithm: string) {
+	public async updateSortingAlgorithm(algorithm: string) {
 		if (this.algorithmsDict.hasOwnProperty(algorithm)) {
-			this.currentSortingAlgorithm = algorithm
+			const config = await ConfigModel.findOne({ id: configIds.currentSortingAlgorithm })
+			// @ts-ignore
+			config.data = algorithm
+			// @ts-ignore
+			await config.save()
 		} else {
-			throw new RequestError('Invalid algorithm.', 400)
+			throw new RequestError('Opcion Invalida.', 400)
 		}
 	}
 
-	public getSortingAlgorithm() {
-		return this.algorithmsDict[this.currentSortingAlgorithm]
+	public async getSortingAlgorithm() {
+		const config = await ConfigModel.findOne({ id: configIds.currentSortingAlgorithm })
+		// @ts-ignore
+		return config ? this.algorithmsDict[config.data] : this.algorithmsDict[0]
 	}
 }
 

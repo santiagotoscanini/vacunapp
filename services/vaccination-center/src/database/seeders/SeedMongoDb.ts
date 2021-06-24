@@ -4,6 +4,8 @@ import { VaccinationPeriodModel } from '../models/vaccination-period'
 import { Types } from 'mongoose'
 import { generateReserveCode, ReserveModel } from '../models/reserve'
 import { UserModel } from '../models/user'
+import { configIds, ConfigModel } from '../models/config'
+import reserveSorting from '../../services/queue/reserveSorting'
 
 class SeedMongoDb {
 	constructor() {
@@ -31,14 +33,41 @@ class SeedMongoDb {
 						new Types.ObjectId('5349b4ddd2781d08c09890f8'),
 						new Types.ObjectId('5349b4ddd2781d08c09890f9')
 					]
+					const configIds = [
+						new Types.ObjectId('5349b4ddd2781d08c09890d1'),
+						new Types.ObjectId('5349b4ddd2781d08c09890d2'),
+						new Types.ObjectId('5349b4ddd2781d08c09890d3')
+					]
 					await SeedMongoDb.createSelectionCriteria(selectionCriteriaIds)
 					await SeedMongoDb.createVaccinationPeriod(vaccinationCenterId, selectionCriteriaIds, vaccinationPeriodIds)
 					await SeedMongoDb.createReserves(vaccinationCenterId, userIds, vaccinationPeriodIds, reserveIds)
+					await SeedMongoDb.loadConfigData(configIds)
 				} else {
 					console.log('Seed already detected...')
 				}
 			}
 		)
+	}
+
+	private static async loadConfigData(mongoConfigIds: any) {
+		await ConfigModel.create({
+			'_id': mongoConfigIds[0],
+			'__v': 0,
+			id: configIds.currentSortingAlgorithm,
+			data: Object.keys(reserveSorting.algorithmsDict)[0]
+		})
+		await ConfigModel.create({
+			'_id': mongoConfigIds[1],
+			'__v': 0,
+			id: configIds.idProviderUrl,
+			data: `http://${process.env.ID_PROVIDER_MOCK_HOST}`
+		})
+		await ConfigModel.create({
+			'_id': mongoConfigIds[2],
+			'__v': 0,
+			id: configIds.smsUrl,
+			data: `http://${process.env.SMS_MOCK_HOST}`
+		})
 	}
 
 	private static async createVaccinationCenter(vaccinationCenterId: Types.ObjectId) {
@@ -130,7 +159,7 @@ class SeedMongoDb {
 			'userId': userIds[0],
 			'departmentZone': 12,
 			'departmentId': 3,
-			'vaccinationDay': new Date(2022, 3, 27),
+			'vaccinationDate': new Date(2022, 3, 27),
 			'isProcessed': true,
 			'vaccinationPeriodId': vaccinationPeriodIds[0],
 			'vaccinationCenterId': vaccinationCenterId[0],
@@ -146,7 +175,7 @@ class SeedMongoDb {
 			'userId': userIds[1],
 			'departmentZone': 12,
 			'departmentId': 3,
-			'vaccinationDay': new Date(2022, 3, 27),
+			'vaccinationDate': new Date(2022, 3, 27),
 			'isProcessed': true,
 			'vaccinationPeriodId': vaccinationPeriodIds[0],
 			'vaccinationCenterId': vaccinationCenterId[0],

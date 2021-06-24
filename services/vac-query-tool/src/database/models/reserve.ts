@@ -12,7 +12,7 @@ class Reserve {
 	public departmentZone?: number
 
 	@prop({ type: Date, required: true })
-	public vaccinationDay?: Date
+	public vaccinationDate?: Date
 
 	@prop({ type: Boolean, required: true })
 	public isProcessed?: boolean

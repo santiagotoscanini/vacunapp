@@ -5,6 +5,8 @@ import vaccinationCenterController from '../controllers/vaccinationCenterControl
 const router: Router = Router()
 
 router.post('/', vaccinationCenterController.create)
+router.get('/remaining-vaccines', vaccinationCenterController.getRemainingVaccines)
+router.get('/vaccines', vaccinationCenterController.getVaccines)
 router.post('/vaccinations', vaccinationCenterController.vaccinate)
 
 export default router

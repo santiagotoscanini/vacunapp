@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import PendingReservesService from '../services/pendingReservesService'
 
 class PendingReservesController {
-	public async getPendingReservesByDepartment(req: Request, res: Response, next: NextFunction){
+	public async getPendingReservesByDepartment(req: Request, res: Response, next: NextFunction) {
 		try {
 			const requestTimeStamp = new Date()
 			const pendingReserves = await PendingReservesService.getPendingReservesByDepartment()
@@ -15,8 +15,7 @@ class PendingReservesController {
 				'queryProcessingTimeStampInMS': processTimeStamp,
 				'response': pendingReserves
 			})
-		} catch (e){
-			console.log(e)
+		} catch (e) {
 			next(e)
 		}
 	}

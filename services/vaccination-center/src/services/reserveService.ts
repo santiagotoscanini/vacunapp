@@ -3,12 +3,11 @@ import { ReserveRequestDto } from '../dto/reserveRequestDto'
 import { ReserveProcessDto } from '../dto/reserveProcessDto'
 import { Reserve, ReserveModel } from '../database/models/reserve'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
-import { User } from '../database/models/user'
+import { User, UserModel } from '../database/models/user'
 import { SelectionCriteria } from '../database/models/selection-criteria/selectionCriteria'
 import { SmsMessageAdapter } from '../adapters/message/smsMessageAdapter'
 import { SmsDto } from '../dto/smsDto'
 import { Types } from 'mongoose'
-import { UserModel } from '../database/models/user'
 import { VaccinationCenterModel } from '../database/models/vaccination-center'
 import { VaccinationRegisterDto } from '../dto/vaccinationRegisterDto'
 import { VaccinationRegisterModel } from '../database/models/vaccination-register'
@@ -35,7 +34,7 @@ class ReserveService {
 			// @ts-ignore
 			vaccinationCenterCode: reserve.departmentZone,
 			// @ts-ignore
-			date: reserve.vaccinationDay,
+			date: reserve.vaccinationDate,
 			// @ts-ignore
 			initTimeStamp: reserve.timeStampInit,
 			// @ts-ignore
@@ -60,7 +59,7 @@ class ReserveService {
 			departmentZone: reserveRequestDto.attributes.departmentZone,
 			vaccinationCenterId: reserveProcessDto.attributes.vaccinationCenterId,
 			vaccinationPeriodId: reserveProcessDto.attributes.vaccinationPeriodId,
-			vaccinationDay: reserveRequestDto.attributes.reserveDate,
+			vaccinationDate: reserveRequestDto.attributes.reserveDate,
 			statusMessage: reserveProcessDto.attributes.statusMessage,
 			timeStampFinish: timeStampFinish,
 			timeStampInit: timeStampInit,
@@ -93,13 +92,13 @@ class ReserveService {
 		await this.updateVaccinationPeriod(vaccinationPeriod, (vaccinationPeriod.amountOfVaccines ?? 0) + 1)
 	}
 
-	public static async addVaccinationRegister(vacRegister: VaccinationRegisterDto){
+	public static async addVaccinationRegister(vacRegister: VaccinationRegisterDto) {
 		const vacRegisterModel = new VaccinationRegisterModel(
 			{
 				departmentZone: vacRegister.attributes.departmentZone,
 				departmentId: vacRegister.attributes.departmentId,
 				age: vacRegister.attributes.age,
-				vaccinationDay: vacRegister.attributes.vaccinationDay,
+				vaccinationDate: vacRegister.attributes.vaccinationDate,
 				workingTime: vacRegister.attributes.workingTime
 			}
 		)
@@ -110,6 +109,7 @@ class ReserveService {
 		const reserve = await ReserveModel.findOne({ code: reserveId })
 			.populate('userId')
 			.populate('vaccinationCenterId')
+			.populate('vaccinationPeriodId')
 			.exec()
 		// @ts-ignore
 		if (reserve == undefined || reserve.userId.id != userId) {
@@ -134,15 +134,21 @@ class ReserveService {
 	public static async getReserveVaccinationCenter(reserve: Reserve) {
 		// @ts-ignore
 		const vacPeriod = await VaccinationPeriodModel.findOne({ _id: new Types.ObjectId(reserve.vaccinationPeriodId) })
-		if(!vacPeriod){
+		if (!vacPeriod) {
 			throw new RequestError(`No existe un período de vacunación para la reserva ${reserve.code}`, 404)
 		}
 		// @ts-ignore
-		const vacCenter = await VaccinationCenterModel.findOne({_id: new Types.ObjectId(vacPeriod.vaccinationCenterId)})
-		if(!vacCenter){
+		const vacCenter = await VaccinationCenterModel.findOne({ _id: new Types.ObjectId(vacPeriod.vaccinationCenterId) })
+		if (!vacCenter) {
 			throw new RequestError(`No existe el Centro de vacuncación del período seleccionado`, 404)
 		}
 		return vacCenter
+	}
+
+	public static async updateReserveMessage(reserve: Reserve, message: string) {
+		const reserveModel = new ReserveModel(reserve)
+		reserveModel.statusMessage = message
+		return reserveModel.save()
 	}
 
 	private static async deleteReserveUpdatePeriod(reserve: Reserve) {
@@ -153,17 +159,11 @@ class ReserveService {
 		await ReserveModel.deleteOne({ code: reserve.code })
 	}
 
-	public static async validateAndUpdateReserveMessage(reserve: Reserve, message: string) {
-		const reserveModel = new ReserveModel(reserve)
-		reserveModel.statusMessage = message
-		return reserveModel.save()
-	}
-
 	private static async updateVaccinationPeriod(vaccinationPeriod: VaccinationPeriod, amount: number) {
 		const vaccinationPeriodModel = new VaccinationPeriodModel(vaccinationPeriod)
 		vaccinationPeriodModel.amountOfVaccines = amount
 		vaccinationPeriod.amountOfVaccines = amount
-		return vaccinationPeriodModel.save()
+		await vaccinationPeriodModel.save()
 	}
 
 	private static async getVaccinationPeriods(reserveRequestDto: ReserveRequestDto, user: User) {
@@ -196,7 +196,7 @@ class ReserveService {
 			// @ts-ignore
 			vaccinationCenterId: vaccinationPeriod.vaccinationCenterId,
 			vaccinationPeriodId: vaccinationPeriod,
-			vaccinationDay: requestModel.attributes.reserveDate,
+			vaccinationDate: requestModel.attributes.reserveDate,
 			statusMessage: 'Reserva procesada correctamente',
 			success: true
 		})

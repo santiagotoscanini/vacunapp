@@ -2,15 +2,15 @@ import { NextFunction, Request, Response } from 'express'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import axiosErrorHandler from './helpers/axiosErrorHandler'
 
-class VaccinationCenterController {
-	public async create(req: Request, res: Response, next: NextFunction) {
+class ConfigController {
+	public async changeAlgorithm(req: Request, res: Response, next: NextFunction) {
 		try {
 			const vaccination_center_host: string = process.env.VACCINATION_CENTER_HOST || 'vaccination-center-service.com'
 			const vaccination_center_url: string = `http://${vaccination_center_host}`
-
 			const body = req.body
+
 			axios
-				.post(`${vaccination_center_url}/vaccination-centers`, body)
+				.post(`${vaccination_center_url}/config/algorithm`, body)
 				.then((data: AxiosResponse) =>
 					res
 						.status(201)
@@ -22,12 +22,14 @@ class VaccinationCenterController {
 		}
 	}
 
-	public async getRemainingVaccines(req: Request, res: Response, next: NextFunction) {
+
+	public async fetchAlgorithms(req: Request, res: Response, next: NextFunction) {
 		try {
 			const vaccination_center_host: string = process.env.VACCINATION_CENTER_HOST || 'vaccination-center-service.com'
 			const vaccination_center_url: string = `http://${vaccination_center_host}`
+
 			axios
-				.get(`${vaccination_center_url}/vaccination-centers/remaining-vaccines`)
+				.get(`${vaccination_center_url}/config/algorithm`)
 				.then((data: AxiosResponse) =>
 					res
 						.status(201)
@@ -39,36 +41,33 @@ class VaccinationCenterController {
 		}
 	}
 
-	public async getVaccines(req: Request, res: Response, next: NextFunction) {
+	public async changeSmsUrl(req: Request, res: Response, next: NextFunction) {
 		try {
 			const vaccination_center_host: string = process.env.VACCINATION_CENTER_HOST || 'vaccination-center-service.com'
 			const vaccination_center_url: string = `http://${vaccination_center_host}`
-			axios
-				.get(`${vaccination_center_url}/vaccination-centers/vaccines?`, {
-					params: {
-						vaccinationCenterId: req.query.vaccinationCenterId?.toString(),
-						date: req.query.date?.toString()
-					}
-				})
-				.then((data: AxiosResponse) =>
-					res
-						.status(201)
-						.send(data.data)
-				)
-				.catch((err: AxiosError) => axiosErrorHandler(err, next))
-		} catch (e) {
-			next(e)
-		}
-	}
-
-	public async vaccinate(req: Request, res: Response, next: NextFunction) {
-		try {
-			const vaccination_center_host: string = process.env.VACCINATION_CENTER_HOST || 'vaccination-center-service.com'
-			const vaccination_center_url: string = `http://${vaccination_center_host}`
-
 			const body = req.body
+
 			axios
-				.post(`${vaccination_center_url}/vaccination-centers/vaccinations`, body)
+				.post(`${vaccination_center_url}/config/sms`, body)
+				.then((data: AxiosResponse) =>
+					res
+						.status(201)
+						.send(data.data)
+				)
+				.catch((err: AxiosError) => axiosErrorHandler(err, next))
+		} catch (e) {
+			next(e)
+		}
+	}
+
+	public async changeIdProviderUrl(req: Request, res: Response, next: NextFunction) {
+		try {
+			const vaccination_center_host: string = process.env.VACCINATION_CENTER_HOST || 'vaccination-center-service.com'
+			const vaccination_center_url: string = `http://${vaccination_center_host}`
+			const body = req.body
+
+			axios
+				.post(`${vaccination_center_url}/config/id-provider`, body)
 				.then((data: AxiosResponse) =>
 					res
 						.status(201)
@@ -81,4 +80,4 @@ class VaccinationCenterController {
 	}
 }
 
-export default new VaccinationCenterController()
+export default new ConfigController()

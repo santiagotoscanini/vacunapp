@@ -20,7 +20,7 @@ class PendingReservesService {
 				}
 			}
 		])
-		if(pendingReserves.length == 0){
+		if (pendingReserves.length == 0) {
 			return `No hay reservas pendientes`
 		}
 		return pendingReserves

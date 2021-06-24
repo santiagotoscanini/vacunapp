@@ -5,7 +5,7 @@ class VaccinationRegisterService {
 		const vaccinationRegisters = await VaccinationRegisterModel.aggregate([
 			{
 				$match: {
-					'vaccinationDay': {
+					'vaccinationDate': {
 						$gte: dateFrom,
 						$lte: dateTo
 					}
@@ -33,7 +33,7 @@ class VaccinationRegisterService {
 		const vaccinationRegisters = await VaccinationRegisterModel.aggregate([
 			{
 				$match: {
-					'vaccinationDay': {
+					'vaccinationDate': {
 						$gte: dateFrom,
 						$lte: dateTo
 					},

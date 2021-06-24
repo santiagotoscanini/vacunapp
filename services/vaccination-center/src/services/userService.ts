@@ -26,7 +26,7 @@ class UserService {
 
 	public static async getUserIdentifier(userId: string) {
 		const user = await UserModel.findOne({ _id: new Types.ObjectId(userId) })
-		if(!user){
+		if (!user) {
 			throw new RequestError('No existe el usuario')
 		}
 		return user.id

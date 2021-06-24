@@ -11,7 +11,6 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.headers.valueOf('auth-token')) %}
 
 ### Create Vaccination Center
-
 POST localhost:{{web-server-port}}/vaccination-centers
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
@@ -26,35 +25,73 @@ Content-Type: application/json
 
 > {%
 client.test("Request executed successfully", function() {
-  client.assert(response.status === 201, "Response status is not 200")
-})
+  client.assert(response.status === 200, "Response status is not 200");
+});
 %}
 
 ### Create Vaccination Period
-
-POST localhost:{{web-server-port}}/vaccination-centers/vaccination-period
+POST localhost:{{web-server-port}}/vaccination-periods
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "departmentId": 1,
-  "departmentZone": 4,
+  "departmentId": 2,
+  "departmentZone": 12,
   "vaccinationCenterId": "antel_arena",
-  "dateFrom": {
-    "day": 1,
-    "month": 2,
-    "year": 2020
-  },
-  "dateTo": {
-    "day": 1,
-    "month": 3,
-    "year": 2020
-  },
+  "dateFrom": "02/01/2023",
+  "dateTo": "03/01/2023",
   "amountOfVaccines": 2,
   "selectionCriteria": {
     "age": {
-      "from": 40,
-      "to": 46
+      "to": 90
     }
   }
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Create Reserve
+POST localhost:{{web-server-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": "10002244",
+  "phone": "098567345",
+  "reserveDate": "02/05/2023",
+  "departmentId": 2,
+  "departmentZone": 12,
+  "turn": 1
+}
+
+### Delete Reserve
+DELETE localhost:{{web-server-port}}/reserves?userId=10002244&reserveId=51eeed894a
+Content-Type: application/json
+
+### Get Reserve
+GET localhost:{{web-server-port}}/reserves?userId=10002244&reserveId=51eeed894a
+Content-Type: application/json
+
+### Get Remaining Vaccines
+GET localhost:{{web-server-port}}/vaccination-centers/remaining-vaccines
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Get Vaccines
+GET localhost:{{web-server-port}}/vaccination-centers/vaccines?vaccinationCenterId=antel_arena&date=02/02/2020
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Register Vaccination
+POST localhost:{{web-server-port}}/vaccination-centers/vaccinations
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "vaccinationCenterId": "antel_arena",
+  "userId": 10002244,
+  "vaccinationDate": "2023-02-05"
 }

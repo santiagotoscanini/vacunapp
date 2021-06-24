@@ -1,11 +1,12 @@
 import { MessageAdapter } from './messageAdapter'
 import axios from 'axios'
 import { SmsDto } from '../../dto/smsDto'
+import { configIds, ConfigModel } from '../../database/models/config'
 
 export class SmsMessageAdapter implements MessageAdapter {
-	public sendMessage(smsDto: SmsDto): Promise<any> {
-		const sms_host: string = process.env.SMS_MOCK_HOST || 'sms-service.com'
-		const sms_url: string = `http://${sms_host}`
+	public async sendMessage(smsDto: SmsDto): Promise<any> {
+		const sms_host = await ConfigModel.findOne({ id: configIds.smsUrl })
+		const sms_url = sms_host!=undefined ? sms_host.data : `http://${process.env.SMS_MOCK_HOST}`
 
 		const message = `
 		Código de reserva: ${smsDto.attributes.reserveCode}

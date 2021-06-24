@@ -9,7 +9,7 @@ services:
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
       LOGIN_HOST: "login"
       VACCINATION_CENTER_HOST: "vaccination-center"
-      RESERVE_HOST: "reserve"
+      RESERVE_HOST: "reserve-service"
       NODE_ENV: "development"
     depends_on:
       - login

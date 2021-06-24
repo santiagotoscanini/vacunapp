@@ -5,7 +5,6 @@ import axiosErrorHandler from './helpers/axiosErrorHandler'
 import LoginAuthenticationAdapter from '../adapters/authentication/loginAuthenticationAdapter'
 
 class LoginController {
-
 	public async login(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { email, password } = req.body
@@ -23,4 +22,4 @@ class LoginController {
 	}
 }
 
-export const loginController: LoginController = new LoginController()
+export default new LoginController()

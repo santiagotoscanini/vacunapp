@@ -8,13 +8,13 @@ class VaccinationPeriodQueueService {
 		await ReserveModel.find({
 			departmentId: vaccinationPeriod.departmentId,
 			departmentZone: vaccinationPeriod.departmentZone,
-			vaccinationDay: {
+			vaccinationDate: {
 				$gte: vaccinationPeriod.dateFrom,
 				$lte: vaccinationPeriod.dateTo
 			},
 			isProcessed: false
 		}).populate('userId')
-			.sort(reserveSorting.getSortingAlgorithm())
+			.sort(await reserveSorting.getSortingAlgorithm())
 			.limit(vaccinationPeriod.amountOfVaccines ?? 0)
 			.cursor()
 			.eachAsync(async function(reserve) {

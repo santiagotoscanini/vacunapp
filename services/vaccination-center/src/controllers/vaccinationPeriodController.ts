@@ -5,6 +5,7 @@ import { VaccinationCenterModel } from '../database/models/vaccination-center'
 import SelectionCriteriaImporter from '../database/selectionCriteriaImporter'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
 import VaccinationPeriodQueueService from '../services/queue/vaccinationPeriodQueueService'
+import isValidDate from './helpers/dateHelper'
 
 class VaccinationPeriodController {
 	private static getBodyToSaveSelectionCriteria(selectionCriteriaType: string, selectionCriteria: { [index: string]: any }) {
@@ -16,14 +17,23 @@ class VaccinationPeriodController {
 
 	private static getBodyToSaveVaccinationPeriod(body: { [index: string]: any }, selectionCriteria: any, vaccinationCenter: any) {
 		const { departmentId, departmentZone, dateFrom, dateTo, amountOfVaccines } = body
+		const parsedDateFrom = new Date(dateFrom)
+		const parsedDateTo = new Date(dateTo)
+		if (!isValidDate(parsedDateFrom)) {
+			throw new RequestError(`Formato de fecha invalido:${dateFrom}`, 400)
+		}
+		if (!isValidDate(parsedDateTo)) {
+			throw new RequestError(`Formato de fecha invalido:${dateTo}`, 400)
+		}
+
 		return {
 			departmentId,
 			departmentZone,
 			amountOfVaccines,
 			'selectionCriteriaId': selectionCriteria._id,
 			'vaccinationCenterId': vaccinationCenter._id,
-			'dateFrom': new Date(dateFrom['year'], dateFrom['month'] - 1, dateFrom['day']),
-			'dateTo': new Date(dateTo['year'], dateTo['month'] - 1, dateTo['day'])
+			'dateFrom': parsedDateFrom,
+			'dateTo': parsedDateTo
 		}
 	}
 
