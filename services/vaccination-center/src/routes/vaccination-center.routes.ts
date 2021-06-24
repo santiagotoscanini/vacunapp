@@ -5,5 +5,6 @@ import vaccinationCenterController from '../controllers/vaccinationCenterControl
 const router: Router = Router()
 
 router.post('/', vaccinationCenterController.create)
+router.post('/vaccinations', vaccinationCenterController.vaccinate)
 
 export default router

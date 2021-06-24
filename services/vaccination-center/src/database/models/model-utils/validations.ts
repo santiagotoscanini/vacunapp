@@ -17,6 +17,7 @@ export default {
 	maxPriorityGroup: [4, 'El valor para grupo maximo es 4.'],
 	isGroupRequired: [true, 'Grupo de prioridad es requerido.'],
 	workingTime: [[1, 2, 3], 'Valores permitidos [1, 2, 3]'],
+	reserveStatusMessages: ['Reserva registrada con exito', 'Reserva procesada correctamente', 'Reserva procesada correctamente, se enviara un SMS con los detalles', 'Vacunación completada'],
 	validateIdentificationNumber: {
 		validator: (id: string) => validateIdentificationNumber(id),
 		message: 'Id de usuario invalida'

@@ -35,6 +35,36 @@ This file defines the variables: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_DIALE
 
 ### Issues
 
-* Actually using beta version of `Typegoose` because of [this issue](https://github.com/typegoose/typegoose/issues/432)
+* Actually using beta version of `Typegoose` because of [this issue](https://github.com/typegoose/typegoose/issues/432).
 * We have to subtract one for months in `Mongoose` because
-  of [this issue](https://stackoverflow.com/questions/37388552/mongoose-increment-the-date-field-of-a-mongo-collection-by-one-month)
+  of [this issue](https://stackoverflow.com/questions/37388552/mongoose-increment-the-date-field-of-a-mongo-collection-by-one-month).
+
+# Endpoints classified by user
+
+## Citizen
+* POST `/reserve`.
+* GET `/reserve/{reserve_id}`.
+* DELETE `/reserve/{ci}/{reserve_id}`.
+
+## Sanitary Authority
+* POST `/vaccination-center`.
+* POST `/vaccination-period`.
+
+## Vaccination Center
+* POST `/vaccination`.
+
+## Journalists and public.
+* GET `/remaining-vaccines/{vaccination-center-id}` return given and remaining vaccines for Vaccination Center.
+* GET `/reserves-to-assign` reserves to assign by department and zone.
+
+## Scientists
+* GET `/applied-vaccines/date?dateFrom={}&dateTo={}` return applied vaccines by department and schedule.
+* GET `/applied-vaccines/date/age?dateFrom={}&dateTo={}&ageFrom={}&ageTo={}`
+* GET `/reserves-to-assign` reserves to assign by department.
+
+## Login
+* POST `/login`
+
+## Technicians
+* POST `/configure`... 
+<!-- TODO --> 

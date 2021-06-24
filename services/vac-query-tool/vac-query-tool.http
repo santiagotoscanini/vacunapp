@@ -1,0 +1,25 @@
+### Filer by Date Range
+
+GET localhost:{{vac-query-tool-port}}/applied-vaccines/departments/working-times
+Content-Type: application/json
+
+{
+  "dateFrom": "27/01/2021",
+  "dateTo": "28/09/2021"
+}
+
+### Filter by Date and Age Range
+
+GET localhost:{{vac-query-tool-port}}/applied-vaccines/departments/zones
+Content-Type: application/json
+
+{
+  "dateFrom": "27/01/2021",
+  "dateTo": "28/09/2021",
+  "ageFrom": 20,
+  "ageTo": 105
+}
+
+### Get pending reserves
+GET localhost:{{vac-query-tool-port}}/pending-reserves
+Content-Type: application/json

@@ -90,7 +90,7 @@ class SeedMongoDb {
 			'__v': 0,
 			'_id': vaccinationPeriodIds[1],
 			'amountOfVaccines': 3,
-			'dateFrom': new Date(202, 3, 3),
+			'dateFrom': new Date(2022, 3, 3),
 			'dateTo': new Date(2022, 12, 1),
 			'departmentZone': 12,
 			'departmentId': 3,

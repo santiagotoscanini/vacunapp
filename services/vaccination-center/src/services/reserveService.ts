@@ -5,11 +5,18 @@ import { Reserve, ReserveModel } from '../database/models/reserve'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
 import { User } from '../database/models/user'
 import { SelectionCriteria } from '../database/models/selection-criteria/selectionCriteria'
+import { Types } from 'mongoose'
+import { UserModel } from '../database/models/user'
+import { VaccinationCenterModel } from '../database/models/vaccination-center'
+import { VaccinationRegisterDto } from '../dto/vaccinationRegisterDto'
+import { VaccinationRegisterModel } from '../database/models/vaccination-register'
+import UserService from '../services/userService'
 
 class ReserveService {
 	public static async deleteReserve(userId: string, reserveId: string) {
 		const reserve = await this.getReserve(reserveId, userId)
 		await this.deleteReserveUpdatePeriod(reserve)
+		await UserService.deleteUser(userId)
 	}
 
 	public static async createReserve(
@@ -60,6 +67,19 @@ class ReserveService {
 		await this.updateVaccinationPeriod(vaccinationPeriod, (vaccinationPeriod.amountOfVaccines ?? 0) + 1)
 	}
 
+	public static async addVaccinationRegister(vacRegister: VaccinationRegisterDto){
+		const vacRegisterModel = new VaccinationRegisterModel(
+			{
+				departmentZone: vacRegister.attributes.departmentZone,
+				departmentId: vacRegister.attributes.departmentId,
+				age: vacRegister.attributes.age,
+				vaccinationDay: vacRegister.attributes.vaccinationDay,
+				workingTime: vacRegister.attributes.workingTime
+			}
+		)
+		await vacRegisterModel.save()
+	}
+
 	public static async getReserve(reserveId: string, userId: string) {
 		const reserve = await ReserveModel.findOne({ code: reserveId })
 			.populate('userId')
@@ -72,12 +92,45 @@ class ReserveService {
 		return reserve
 	}
 
+	public static async getUserReserve(userId: string) {
+		const user = await UserModel.findOne({ id: userId })
+		if (!user) {
+			throw new RequestError(`No existe un usuario con CI ${userId}`, 404)
+		}
+		const mongoUserId = user._id
+		const reserve = await ReserveModel.findOne({ userId: new Types.ObjectId(mongoUserId) })
+		if (!reserve) {
+			throw new RequestError(`No existe una reserva para la CI ${userId}`, 404)
+		}
+		return reserve
+	}
+
+	public static async getReserveVaccinationCenter(reserve: Reserve) {
+		// @ts-ignore
+		const vacPeriod = await VaccinationPeriodModel.findOne({ _id: new Types.ObjectId(reserve.vaccinationPeriodId) })
+		if(!vacPeriod){
+			throw new RequestError(`No existe un período de vacunación para la reserva ${reserve.code}`, 404)
+		}
+		// @ts-ignore
+		const vacCenter = await VaccinationCenterModel.findOne({_id: new Types.ObjectId(vacPeriod.vaccinationCenterId)})
+		if(!vacCenter){
+			throw new RequestError(`No existe el Centro de vacuncación del período seleccionado`, 404)
+		}
+		return vacCenter
+	}
+
 	private static async deleteReserveUpdatePeriod(reserve: Reserve) {
 		if (reserve.isProcessed) {
 			// @ts-ignore
 			await ReserveService.addVaccineFromPeriod(reserve.vaccinationPeriodId)
 		}
 		await ReserveModel.deleteOne({ code: reserve.code })
+	}
+
+	public static async validateAndUpdateReserveMessage(reserve: Reserve, message: string) {
+		const reserveModel = new ReserveModel(reserve)
+		reserveModel.statusMessage = message
+		return reserveModel.save()
 	}
 
 	private static async updateVaccinationPeriod(vaccinationPeriod: VaccinationPeriod, amount: number) {

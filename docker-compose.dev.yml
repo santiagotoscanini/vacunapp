@@ -59,6 +59,7 @@ services:
       DB_SCHEMA: "$DB_MONGO_SCHEMA"
       DB_HOST: "mongo"
       NODE_ENV: "development"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
     depends_on:
       - mongo
       - redis
@@ -66,6 +67,23 @@ services:
       - "3002:80"
     volumes:
       - ./services/vaccination-center/src:/app/src
+
+  vac-query-tool:
+    build:
+      context: services/vac-query-tool
+      dockerfile: Dockerfile.dev
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: "development"
+    depends_on:
+      - mongo
+    ports:
+      - "3006:80"
+    volumes:
+      - ./services/vac-query-tool/src:/app/src
 
   redis:
     image: "redis:alpine"

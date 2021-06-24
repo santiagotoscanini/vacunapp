@@ -28,8 +28,8 @@ DELETE localhost:{{reserve-service-port}}/reserves
 Content-Type: application/json
 
 {
-  "userId": 10000014,
-  "reserveId": "18fe738916"
+  "userId": 10000058,
+  "reserveId": "ed06b6206d"
 }
 
 ### Get reserve
@@ -38,7 +38,7 @@ GET localhost:{{reserve-service-port}}/reserves
 Content-Type: application/json
 
 {
-  "userId": 10000014,
-  "reserveId": "18fe738916"
+  "userId": 10000058,
+  "reserveId": "ed06b6206d"
 }
 

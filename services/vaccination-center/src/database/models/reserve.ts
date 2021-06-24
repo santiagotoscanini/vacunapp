@@ -56,7 +56,7 @@ class Reserve {
 	@prop({ ref: 'VaccinationCenter' })
 	public vaccinationCenterId?: Ref<VaccinationCenter>
 
-	@prop({ type: String, required: true })
+	@prop({ type: String, enum: validations.reserveStatusMessages, required: true })
 	public statusMessage?: string
 
 	@prop({ type: Date, required: true })

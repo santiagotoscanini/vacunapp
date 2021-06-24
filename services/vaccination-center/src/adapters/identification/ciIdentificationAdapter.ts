@@ -2,8 +2,8 @@ import { IdentificationAdapter } from './identificationAdapter'
 import axios from 'axios'
 import { RequestError } from '../../middlewares/errorHandler/RequestError'
 
-export class CiIdentificationAdapter implements IdentificationAdapter {
-	async getInformation(identifier: string) {
+class CiIdentificationAdapter implements IdentificationAdapter {
+	public async getInformation(identifier: string) {
 		const id_provider_host: string = process.env.ID_PROVIDER_MOCK_HOST || 'id-provider.com'
 		const id_provider_url: string = `http://${id_provider_host}`
 		try {
@@ -14,3 +14,5 @@ export class CiIdentificationAdapter implements IdentificationAdapter {
 		}
 	}
 }
+
+export default new CiIdentificationAdapter()

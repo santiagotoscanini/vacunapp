@@ -1,11 +1,12 @@
 import { ReserveRequestDto } from '../dto/reserveRequestDto'
 import { UserModel } from '../database/models/user'
-import { CiIdentificationAdapter } from '../adapters/identification/ciIdentificationAdapter'
+import CiIdentificationAdapter from '../adapters/identification/ciIdentificationAdapter'
+import { Types } from 'mongoose'
+import { RequestError } from '../middlewares/errorHandler/RequestError'
 
 class UserService {
 	public static async createUser(reserveRequestDto: ReserveRequestDto) {
-		const ciService = new CiIdentificationAdapter()
-		const userInformation = await ciService.getInformation(reserveRequestDto.attributes.userId)
+		const userInformation = await CiIdentificationAdapter.getInformation(reserveRequestDto.attributes.userId)
 		const user = new UserModel({
 			id: reserveRequestDto.attributes.userId,
 			phone: reserveRequestDto.attributes.phone,
@@ -21,6 +22,18 @@ class UserService {
 
 	public static async getUser(userId: string) {
 		return UserModel.findOne({ id: userId })
+	}
+
+	public static async getUserIdentifier(userId: string) {
+		const user = await UserModel.findOne({ _id: new Types.ObjectId(userId) })
+		if(!user){
+			throw new RequestError('No existe el usuario')
+		}
+		return user.id
+	}
+
+	public static async deleteUser(userId: string) {
+		await UserModel.deleteOne({ id: userId })
 	}
 }
 
