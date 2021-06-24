@@ -1,28 +1,30 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 
-import db from '../database/models';
+import db from '../database/models'
+import { RequestError } from '../middlewares/errorHandler/RequestError'
 
 class LoginController {
-	public async login(req: Request, res: Response) {
-		const { email, password } = req.body;
+	public async login(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { email, password } = req.body
 
-		const user = await db.User.findByPk(email);
+			const user = await db.User.findByPk(email)
+			if (!(user && await user.validPassword(password))) throw new RequestError('bad credentials', 400)
 
-		if (user && await user.validPassword(password)) {
-			const tokenExpiration: number = 60 * 60 * 24; // 1 day
+			const tokenExpiration: number = 60 * 60 * 24 // 1 day
 
-			const token: string = jwt.sign(
-				{ email },
+			const token = await jwt.sign(
+				{ email: user.email, roles: user.roles },
 				process.env.JWT_SECRET_KEY || 'dummy_token',
 				{ expiresIn: tokenExpiration }
-			);
+			)
 
-			res.header('auth-token', token).json({ email });
-		} else {
-			res.status(400).json({ 'message': 'bad credentials' });
+			res.header('auth-token', token).json({ email })
+		} catch (e) {
+			next(e)
 		}
 	}
 }
 
-export const loginController: LoginController = new LoginController();
+export const loginController: LoginController = new LoginController()

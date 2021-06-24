@@ -1,4 +1,4 @@
-POST localhost:3000/login HTTP/1.1
+POST localhost:{{login-port}}/login
 Content-Type: application/json
 
 {
@@ -6,12 +6,8 @@ Content-Type: application/json
   "password": "dolor_sit_amet"
 }
 
-
 > {%
 client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
 });
-
-// TODO(santito): check how to save token in global variable
-client.global.set("auth_token", response.headers[0]);
 %}

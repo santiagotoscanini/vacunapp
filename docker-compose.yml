@@ -1,36 +1,162 @@
-# TODO(santito): mongoDB service and left apps
-
 version: "3.8"
-services:
-  pg-db:
-    container_name: pg-db
-    image: postgres
-    environment:
-      POSTGRES_USER: "$POSTGRES_USER"
-      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-    ports:
-      - '5432:5432'
-    volumes:
-      - vacunapp-db:/var/lib/postgresql/data
 
-  login-service:
-    container_name: login-service
+services:
+  web-server-reverse-proxy:
+    image: nginx
+    depends_on:
+      - web-server
+    environment:
+      ADDRESS: "web-server"
+    ports:
+      - "$WEB_SERVER_NGINX_PORT:80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/conf.d/vacunapp.template
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/vacunapp.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+
+  web-server:
+    build:
+      context: services/web-server
+      dockerfile: Dockerfile
+    environment:
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      LOGIN_HOST: "login"
+      VACCINATION_CENTER_HOST: "vaccination-center"
+      RESERVE_HOST: "reserve-reverse-proxy"
+      NODE_ENV: "production"
+    depends_on:
+      - login
+      - vaccination-center
+      - reserve-reverse-proxy
+    expose:
+      - "80"
+    scale: 3
+
+  login:
     build:
       context: services/login
       dockerfile: Dockerfile
     environment:
-      DB_DIALECT: "$DB_DIALECT"
-      DB_SCHEMA: "$DB_SCHEMA"
-      DB_USER: "$POSTGRES_USER"
-      DB_PASSWORD: "$POSTGRES_PASSWORD"
-      DB_HOST: "$DB_HOST"
-      PORT: "$LOGIN_PORT"
-      NODE_ENV: "$NODE_ENV"
+      DB_USER: "$DB_POSTGRES_USERNAME"
+      DB_PASSWORD: "$DB_POSTGRES_PASSWORD"
+      DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
+      DB_DIALECT: "$DB_POSTGRES_DIALECT"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      DB_HOST: "postgres"
+      NODE_ENV: "production"
     depends_on:
       - postgres
+    expose:
+      - "80"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: "$DB_POSTGRES_USERNAME"
+      POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
+    expose:
+      - '5432'
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+
+  vaccination-center:
+    build:
+      context: services/vaccination-center
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: "production"
+      SMS_MOCK_HOST: "sms-provider-service-mock"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
+    depends_on:
+      - mongo
+      - redis
+    expose:
+      - 80
+
+  redis:
+    image: "redis:alpine"
+    expose:
+      - 6379
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
+      MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
+    expose:
+      - '27017'
+    volumes:
+      - mongo-volume:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  reserve-reverse-proxy:
+    image: nginx
+    depends_on:
+      - reserve-service
+    environment:
+      ADDRESS: "reserve-service"
+    expose:
+      - "80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/conf.d/mysite.template
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+
+  reserve-service:
+    build:
+      context: services/vaccination-center
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: production
+      SMS_MOCK_HOST: "sms-provider-service-mock"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
+    depends_on:
+      - mongo
+      - id-provider-service-mock
+      - sms-provider-service-mock
+    expose:
+      - "80"
+    scale: 3
+
+  vac-query-tool-service:
+    build:
+      context: services/vac-query-tool
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: production
+    depends_on:
+      - mongo
     ports:
-      - "$LOGIN_PORT:$LOGIN_PORT"
+      - "$VAC_QUERY_TOOL_PORT:80"
+
+  id-provider-service-mock:
+    build:
+      context: external-services-mock/id-provider
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    environment:
+      PYTHONUNBUFFERED: 1
+
+  sms-provider-service-mock:
+    build:
+      context: external-services-mock/sms-provider
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    environment:
+      PYTHONUNBUFFERED: 1
 
 volumes:
-  vacunapp-db:
+  postgres-volume:
+  mongo-volume:

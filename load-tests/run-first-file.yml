@@ -1,0 +1,32 @@
+config:
+  target: "http://localhost:3003"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      name: Warm up
+  #    - duration: 60
+  #      arrivalRate: 5
+  #      rampTo: 40
+  payload:
+    path: "data/firstDataset.csv"
+    delimiter: "|"
+    fields:
+      - "DocumentId"
+      - "Cellphone"
+      - "ReservationDate"
+      - "Schedule"
+      - "State"
+      - "Zone"
+
+scenarios:
+  - name: "Vaccination reservation."
+    flow:
+      - post:
+          url: "/reserves"
+          json:
+            userId: "{{ DocumentId }}"
+            phone: "{{ Cellphone }}"
+            reserveDate: "{{ ReservationDate }}"
+            turn: "{{ Schedule }}"
+            departmentId: "{{ State }}"
+            departmentZone: "{{ Zone }}"

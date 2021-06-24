@@ -1,0 +1,85 @@
+### Create Vaccination Center
+POST localhost:{{vaccination-centers-port}}/vaccination-centers
+Content-Type: application/json
+
+{
+  "departmentId": 2,
+  "departmentZone": 12,
+  "id": "antel_arena",
+  "name": "Antel Arena",
+  "workingTime": 1
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Create Vaccination Period
+POST localhost:{{vaccination-centers-port}}/vaccination-periods
+Content-Type: application/json
+
+{
+  "departmentId": 2,
+  "departmentZone": 12,
+  "vaccinationCenterId": "antel_arena",
+  "dateFrom": "02/01/2023",
+  "dateTo": "03/01/2023",
+  "amountOfVaccines": 2,
+  "selectionCriteria": {
+    "age": {
+      "to": 90
+    }
+  }
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Create Reserve
+POST localhost:{{vaccination-centers-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": "10002244",
+  "phone": "098567345",
+  "reserveDate": "02/05/2023",
+  "departmentId": 2,
+  "departmentZone": 12,
+  "turn": 1
+}
+
+### Delete Reserve
+DELETE localhost:{{vaccination-centers-port}}/reserves
+Content-Type: application/json
+
+{
+  "userId": 10002244,
+  "reserveId": "7a61f3a61d"
+}
+
+### Get Reserve
+GET localhost:{{vaccination-centers-port}}/reserves?userId="10002244"&reserveId="51eeed894a"
+Content-Type: application/json
+
+### Get Remaining Vaccines
+GET localhost:{{vaccination-centers-port}}/vaccination-centers/remaining-vaccines
+Content-Type: application/json
+
+### Get Vaccines
+GET localhost:{{vaccination-centers-port}}/vaccination-centers/vaccines?vaccinationCenterId=antel_arena&date=02/02/2020
+Content-Type: application/json
+
+### Register Vaccination
+POST localhost:{{vaccination-centers-port}}/vaccination-centers/vaccinations
+Content-Type: application/json
+
+{
+  "vaccinationCenterId": "antel_arena",
+  "userId": 10002244,
+  "vaccinationDate": "2023-02-05"
+}

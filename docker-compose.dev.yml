@@ -1,38 +1,145 @@
-# TODO(santito): mongoDB service and left apps
-
 version: "3.8"
-services:
-  pg-db:
-    container_name: pg-db
-    image: postgres
-    environment:
-      POSTGRES_USER: "$POSTGRES_USER"
-      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-    ports:
-      - '5432:5432'
-    volumes:
-      - vacunapp-db:/var/lib/postgresql/data
 
-  login-service:
-    container_name: login-service
+services:
+  web-server:
+    build:
+      context: services/web-server
+      dockerfile: Dockerfile.dev
+    environment:
+      JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      LOGIN_HOST: "login"
+      VACCINATION_CENTER_HOST: "vaccination-center"
+      RESERVE_HOST: "reserve-service"
+      NODE_ENV: "development"
+    depends_on:
+      - login
+      - vaccination-center
+      - reserve-service
+    ports:
+      - "3000:80"
+    volumes:
+      - ./services/web-server/src:/app/src
+
+  login:
     build:
       context: services/login
       dockerfile: Dockerfile.dev
     environment:
-      DB_DIALECT: "$DB_DIALECT"
-      DB_SCHEMA: "$DB_SCHEMA"
-      DB_USER: "$POSTGRES_USER"
-      DB_PASSWORD: "$POSTGRES_PASSWORD"
-      DB_HOST: "$DB_HOST"
-      PORT: "$LOGIN_PORT"
-      NODE_ENV: "$NODE_ENV"
+      DB_USER: "$DB_POSTGRES_USERNAME"
+      DB_PASSWORD: "$DB_POSTGRES_PASSWORD"
+      DB_SCHEMA: "$DB_POSTGRES_SCHEMA"
+      DB_DIALECT: "$DB_POSTGRES_DIALECT"
       JWT_SECRET_KEY: "$JWT_SECRET_KEY"
+      DB_HOST: postgres
+      NODE_ENV: "development"
     depends_on:
       - postgres
     ports:
-      - "$LOGIN_PORT:$LOGIN_PORT"
+      - "3001:80"
     volumes:
       - ./services/login/src:/app/src
 
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: "$DB_POSTGRES_USERNAME"
+      POSTGRES_PASSWORD: "$DB_POSTGRES_PASSWORD"
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+
+  vaccination-center:
+    build:
+      context: services/vaccination-center
+      dockerfile: Dockerfile.dev
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: "development"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - "3002:80"
+    volumes:
+      - ./services/vaccination-center/src:/app/src
+
+  vac-query-tool:
+    build:
+      context: services/vac-query-tool
+      dockerfile: Dockerfile.dev
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      NODE_ENV: "development"
+    depends_on:
+      - mongo
+    ports:
+      - "3006:80"
+    volumes:
+      - ./services/vac-query-tool/src:/app/src
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "$DB_MONGO_USERNAME"
+      MONGO_INITDB_ROOT_PASSWORD: "$DB_MONGO_PASSWORD"
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-volume:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  reserve-service:
+    build:
+      context: services/vaccination-center
+      dockerfile: Dockerfile.dev
+    environment:
+      DB_USER: "$DB_MONGO_USERNAME"
+      DB_PASSWORD: "$DB_MONGO_PASSWORD"
+      DB_SCHEMA: "$DB_MONGO_SCHEMA"
+      DB_HOST: "mongo"
+      SMS_MOCK_HOST: "sms-provider-service-mock"
+      ID_PROVIDER_MOCK_HOST: "id-provider-service-mock"
+      NODE_ENV: "development"
+    depends_on:
+      - mongo
+      - id-provider-service-mock
+      - sms-provider-service-mock
+    ports:
+      - "3003:80"
+    volumes:
+      - ./services/vaccination-center/src:/app/src
+
+  id-provider-service-mock:
+    build:
+      context: external-services-mock/id-provider
+      dockerfile: Dockerfile
+    ports:
+      - "3004:80"
+    environment:
+      PYTHONUNBUFFERED: 1
+
+  sms-provider-service-mock:
+    build:
+      context: external-services-mock/sms-provider
+      dockerfile: Dockerfile
+    ports:
+      - "3005:80"
+    environment:
+      PYTHONUNBUFFERED: 1
+
 volumes:
-  vacunapp-db:
+  postgres-volume:
+  mongo-volume:
