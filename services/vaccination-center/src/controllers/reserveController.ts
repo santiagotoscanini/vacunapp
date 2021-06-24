@@ -54,6 +54,7 @@ class ReserveController {
 
 			await user.save()
 			await reserve.save()
+			ReserveService.sendMessage(user, reserve)
 
 			res.status(200).json(reserve.toJson)
 		} catch (e) {

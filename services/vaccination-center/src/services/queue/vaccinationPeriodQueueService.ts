@@ -13,7 +13,8 @@ class VaccinationPeriodQueueService {
 				$lte: vaccinationPeriod.dateTo
 			},
 			isProcessed: false
-		}).sort(reserveSorting.getSortingAlgorithm())
+		}).populate('userId')
+			.sort(reserveSorting.getSortingAlgorithm())
 			.limit(vaccinationPeriod.amountOfVaccines ?? 0)
 			.cursor()
 			.eachAsync(async function(reserve) {
@@ -22,8 +23,9 @@ class VaccinationPeriodQueueService {
 					reserve.vaccinationCenterId = vaccinationPeriod?.vaccinationCenterId
 					reserve.statusMessage = 'Reserva registrada con exito'
 					await reserve.save()
-
 					await ReserveService.removeVaccineFromPeriod(vaccinationPeriod)
+					// @ts-ignore
+					ReserveService.sendMessage(reserve.userId, reserve)
 				}
 			})
 	}

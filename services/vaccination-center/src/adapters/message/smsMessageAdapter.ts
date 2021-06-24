@@ -3,7 +3,7 @@ import axios from 'axios'
 import { SmsDto } from '../../dto/smsDto'
 
 export class SmsMessageAdapter implements MessageAdapter {
-	sendMessage(smsDto: SmsDto): Promise<any> {
+	public sendMessage(smsDto: SmsDto): Promise<any> {
 		const sms_host: string = process.env.SMS_MOCK_HOST || 'sms-service.com'
 		const sms_url: string = `http://${sms_host}`
 

@@ -5,6 +5,8 @@ import { Reserve, ReserveModel } from '../database/models/reserve'
 import { RequestError } from '../middlewares/errorHandler/RequestError'
 import { User } from '../database/models/user'
 import { SelectionCriteria } from '../database/models/selection-criteria/selectionCriteria'
+import { SmsMessageAdapter } from '../adapters/message/smsMessageAdapter'
+import { SmsDto } from '../dto/smsDto'
 import { Types } from 'mongoose'
 import { UserModel } from '../database/models/user'
 import { VaccinationCenterModel } from '../database/models/vaccination-center'
@@ -17,6 +19,30 @@ class ReserveService {
 		const reserve = await this.getReserve(reserveId, userId)
 		await this.deleteReserveUpdatePeriod(reserve)
 		await UserService.deleteUser(userId)
+	}
+
+	public static sendMessage(user: User, reserve: Reserve) {
+		const smsMessage = new SmsMessageAdapter()
+		smsMessage.sendMessage(new SmsDto({
+			// @ts-ignore
+			cellphone: user.phone,
+			// @ts-ignore
+			reserveCode: reserve.code,
+			// @ts-ignore
+			identifier: user.id,
+			// @ts-ignore
+			departmentId: reserve.departmentId,
+			// @ts-ignore
+			vaccinationCenterCode: reserve.departmentZone,
+			// @ts-ignore
+			date: reserve.vaccinationDay,
+			// @ts-ignore
+			initTimeStamp: reserve.timeStampInit,
+			// @ts-ignore
+			endTimeStamp: reserve.timeStampFinish,
+			// @ts-ignore
+			differenceTimeStamp: reserve.processTime
+		}))
 	}
 
 	public static async createReserve(

@@ -21,8 +21,8 @@ POST localhost:{{vaccination-centers-port}}/vaccination-periods
 Content-Type: application/json
 
 {
-  "departmentId": 1,
-  "departmentZone": 4,
+  "departmentId": 2,
+  "departmentZone": 12,
   "vaccinationCenterId": "antel_arena",
   "dateFrom": {
     "day": 1,

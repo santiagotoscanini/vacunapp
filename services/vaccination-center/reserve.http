@@ -4,14 +4,14 @@ POST localhost:{{reserve-service-port}}/reserves
 Content-Type: application/json
 
 {
-  "userId": "10000058",
+  "userId": "10000503",
   "phone": "098319481",
   "reserveDate": {
     "day": 4,
     "month": 2,
     "year": 2023
   },
-  "departmentId": 1,
+  "departmentId": 2,
   "departmentZone": 12,
   "turn": 3
 }
